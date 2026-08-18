@@ -226,3 +226,13 @@ are the core, T5–T7 skippable; hard rules of NIGHT_SHIFT_2.md unchanged.
 - 5 scorer tests on synthetic lines; 3 mutants killed (skill sign flipped,
   scores-before-due, lookahead climatology). Suite 125 (+3 slow).
 - Owner's morning ritual from tomorrow: `python scripts/score_predictions.py`.
+
+### Post-queue fix — clipped chart annotation  ✅  (14:0x)
+- Owner spotted panel 3 of universality.png rendering "de the resolution"
+  (left-clipped): the annotation was placed at DATA coordinates derived from
+  the result value, which drifted outside the axis. All annotations now use
+  axes-fraction coordinates (transAxes), which cannot clip.
+- The generator also moved from a tmp scratch script into
+  `scripts/make_universality_chart.py` — a committed artifact deserves a
+  committed generator (the refresh_docs discipline). Regenerated; all three
+  panels' annotations verified fully inside their axes. Gates green.
