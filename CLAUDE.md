@@ -26,6 +26,7 @@ python scripts/run_backtest.py --benchmark --source stooq   # keyless daily bars
 python scripts/run_backtest.py --sensitivity                # parameter grid
 python scripts/run_backtest.py --walk-forward               # out-of-sample test
 python scripts/run_backtest.py --synthetic --noise-test     # null distribution
+python scripts/run_backtest.py --noise-test --null bootstrap # null from resampled REAL returns
 python -m src.live --once                                   # one dry-run cycle
 python -m src.live --live-orders                            # submit to paper account
 ```
@@ -35,6 +36,7 @@ python -m src.live --live-orders                            # submit to paper ac
 ```
 data.py      -> OHLCV bars (Alpaca IEX / Stooq CSV opt-in / disk cache / synthetic GBM)
 data_quality -> Pre-backtest audit: splits, halts, calendar holes, ragged history
+bootstrap_null -> Stationary block bootstrap of real returns (--null bootstrap)
 strategies/  -> Strategy ABC. Each returns target weights in [-1, 1] per bar.
 backtest.py  -> Bar loop, next-open fills, cost model, walk-forward, sensitivity
 metrics.py   -> Sharpe, Sortino, max drawdown, turnover, exposure
@@ -179,6 +181,19 @@ fixes:
 | Duplicate tickers (`[SPY, SPY, QQQ]`) silently loaded 2 of "3" symbols — the partial-load guard never fired because nothing *failed*, the dict deduped | The guard tested fetch failures, not config nonsense |
 | `end: null` cached as a literal `"latest"` that never expires — the next day's run silently backtested yesterday's file | Nothing keyed the cache to a calendar day |
 | CSV cache round-trip perturbs values ~6e-14, so cached vs uncached equity is not byte-equal (accepted; pinned to 1e-9 on Sharpe) | Only surfaced once the CSV fallback became the live path |
+
+An autonomous overnight run (see NIGHT_LOG.md / MORNING_REPORT.md) then took
+the project onto real data for the first time and added the bootstrap null:
+
+| What happened | The lesson it left behind |
+|---|---|
+| First real-data run: SmaCross 1.04 vs buy-and-hold 1.22 (delta -0.18, inside both nulls); walk-forward 0/4 folds | The tooling's prediction held on contact with reality |
+| `adjustment` verified empirically: raw bars fire `suspected_split` on exactly NVDA 2021-07-20 / 2024-06-10 and AAPL 2020-08-31, and move Sharpe 1.04 → 0.46 | The knob's value is now a measured number, not an argument |
+| The IEX free feed serves ~2020-07 onward regardless of `start:`; SPY carries a stray 2018 fragment + 634-day hole | Ask for 2015, audit what you actually got |
+| Bootstrap null at 200 trials: band [-0.51, +0.08] vs GBM [-0.50, +0.24] — NOT wider, as had been expected: shifted down, upper tail tighter (win 13% vs 24%) | Fat tails widen absolute outcomes, but this statistic is a delta vs a benchmark that keeps the drift; expectations are hypotheses, print what came out |
+| Real-data band rows are pinned to a committed `reports/night_bands.json` artifact, not to refresh_docs markers | Generated markers promise "reproducible from the shipped config"; a 30-minute keys-required run is a dated artifact instead |
+| A Python child's pipe encoding follows the launching shell (utf-8 under PowerShell, cp1252 under Git Bash): the slow doc tests failed depending on which terminal ran pytest | Subprocess tests pin PYTHONIOENCODING on the child, not just the capture side |
+| The band scanner divided a decimal band by 100 when the LINE contained any "%" (a table row has a win-rate cell) | Scope heuristics to the match, not the line |
 
 All five rounds reinforce the same lesson: **fixes need auditing too**, and so
 do the tests that certify them — and so does the tooling built to stop the

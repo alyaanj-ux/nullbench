@@ -19,8 +19,8 @@ whether a result is distinguishable from random luck."
 isn't the strategies, it's the tooling that tells you when a result is fake. I
 kept getting backtests that looked good and turned out to be noise, so I built
 a Monte Carlo tool that generates data with provably no signal in it and
-measures what luck alone produces. A standard moving-average strategy beats its
-benchmark 32% of the time on random data. So most good-looking backtests mean
+measures what luck alone produces. A standard moving-average strategy still beats its
+benchmark roughly a fifth of the time on data with no signal in it. So most good-looking backtests mean
 nothing. I also had the code adversarially audited, four rounds — it found 17 real
 defects in my own work, including bugs in my own fixes."
 
@@ -65,6 +65,18 @@ fail against the pre-fix code."
 ---
 
 ## Likely questions
+
+### "What happened when you finally ran it on real data?"
+Exactly what the tooling predicted. Six years of 15 large caps: the moving-
+average strategy earned a 1.04 Sharpe — sounds great until you see buy-and-hold
+did 1.22 on the same bars. The deficit, -0.18, sits at the 57th percentile of
+the bootstrap null: indistinguishable from luck, in the direction of "worse".
+I also measured what unadjusted data would have done: skipping split
+adjustment moves the strategy's Sharpe from 1.04 to 0.46 — a bug that would
+have dwarfed every real effect in the project. The quality audit caught all
+three splits in the window on raw data and stayed silent on adjusted data,
+and it correctly warned on META's two earnings crashes without calling them
+splits.
 
 ### "Does it make money?"
 No, and I'd be skeptical of any student project claiming it did. My strategies
@@ -120,8 +132,10 @@ next unseen one. Parameter sensitivity: look for a broad plateau of similar
 results rather than one lucky spike. And the noise test, which measures how much
 apparent edge randomness alone generates.
 
-On my data, in-sample Sharpe of 0.63 collapses to -0.21 out-of-sample. That gap
-is overfitting made visible.
+On real data the collapse is stark: sma_cross's mean in-sample Sharpe of 1.41
+drops to 0.61 out-of-sample while buy-and-hold scored 1.37 on the same
+windows — a mean edge of -0.76, zero of four folds positive. That gap is
+overfitting made visible.
 
 ### "Explain the noise test like I don't know finance."
 Suppose you want to know whether a coin is biased. You flip it 100 times and get
@@ -132,8 +146,8 @@ Same idea. I generate market data that's provably random, run the strategy on it
 hundreds of times, and record how well it does. That's the range luck produces.
 If my real result lands inside that range, I've learned nothing.
 
-The result that surprised me: on random data, the moving-average strategy still
-"beat" the market 32% of the time.
+The result that surprised me: on data with provably no signal, the
+moving-average strategy still "beat" the market about one trial in five.
 
 ### "Why not use an existing library like Backtrader?"
 For a production system I would. I wrote my own because the point was

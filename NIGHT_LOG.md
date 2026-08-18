@@ -146,3 +146,17 @@ and judgment call lands here. Written for the owner's morning coffee.
   in-sample cherry-pick is indistinguishable from luck.
 - No cherry-picking: config-default rows reported in README regardless of the
   grid's best row. Full tables preserved here and in tmp t5_out.
+
+### T7 — housekeeping  ✅
+- GLOSSARY: added fat tails, volatility clustering, bootstrap, block
+  resampling (stationary bootstrap) — done earlier while compute ran.
+- INTERVIEW_PREP: stale prose numbers refreshed (32% → "a fifth"; the old
+  synthetic IS→OOS example replaced with the real-data collapse 1.41 → 0.61
+  vs benchmark 1.37); new Q&A "What happened when you finally ran it on real
+  data?" with the adjustment Sharpe delta (1.04 → 0.46) as the punchline.
+- CLAUDE.md: architecture + commands updated for bootstrap_null / --null;
+  night-shift record table added (7 rows, incl. the wrong-width expectation
+  and both infra bugs found tonight). Note: the record's band values pass the
+  scanner because they match the committed artifact — the exemption mechanism
+  working exactly as designed.
+- Counts: 103 fast + 2 slow, enforced by test_documented_test_count everywhere.
