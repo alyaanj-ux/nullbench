@@ -190,6 +190,52 @@ This is the tool to reach for when a result excites you. Run it before you belie
 
 ---
 
+## Results on real data
+
+First executed 2026-08-17 (Alpaca IEX daily bars, split- and dividend-adjusted,
+5 symbols: SPY QQQ AAPL MSFT NVDA). Numbers below reproduce from the cache on a
+rerun; they will drift slightly as new bars arrive.
+
+**Data quality.** The audit found 0 errors and 7 warnings. The warnings are
+informative, not fatal: the free IEX feed only serves history back to ~2020-07
+(SPY carries a stray 2018 segment followed by a 634-day hole, which the audit
+flagged and the engine's intersection logic discarded), and NVDA's +24.3%
+session on 2023-05-25 — the post-earnings gap — is correctly reported as a
+`large_gap` warning rather than a split, because volume did not corroborate a
+re-denomination. The effective backtest window is 2020-07-27 → 2026-08-17.
+
+**Adjustment matters, measured.** Fetching the same universe `raw` instead of
+`all`: the audit fires `error:suspected_split` on exactly NVDA 2021-07-20
+(ratio 4.012, volume ×2.2), NVDA 2024-06-10 (10.042, ×6.0) and AAPL 2020-08-31
+(3.912, ×6.0) — and is silent on those dates when adjusted. On raw bars the
+strategy's Sharpe drops 1.05 → 0.46 and the Sharpe-vs-benchmark delta doubles
+from -0.12 to -0.24. That distortion is why `adjustment: "all"` is the default
+and why raw results are never quotable.
+
+**The headline.** SmaCross(20/100) vs buy-and-hold, after costs:
+
+| | SmaCross | Buy & hold |
+|---|---|---|
+| Sharpe | 1.05 | 1.17 |
+| CAGR | 17.1% | 28.6% |
+| Max drawdown | -28.9% | -34.6% |
+| Total costs | 145.35 | 15.37 |
+
+**The strategy loses to buy-and-hold by 0.12 Sharpe.** Walk-forward is harsher:
+mean out-of-sample edge **-1.45**, 0 of 4 folds positive — in-sample parameter
+selection (mean IS Sharpe 1.32) collapses to -0.11 OOS while the benchmark
+scored 1.34 on the same windows. This is the expected result for a
+one-sentence strategy on large caps, published as-is.
+
+**Caveat.** The noise band quoted elsewhere in this README is built from
+synthetic correlated GBM, which has no fat tails and no volatility clustering
+— so judging this real result against it is indicative, not rigorous.
+Spot-check: our closes match Google Finance to within cents (SPY 772.62 vs
+772.67 — IEX vs consolidated tape).
+
+
+---
+
 ## Configuration
 
 Everything lives in `config.yaml`. The knobs worth understanding:
