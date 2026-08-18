@@ -6,6 +6,9 @@ data/cache/
 logs/
 state/
 reports/
+# ...except committed, dated artifacts that tests pin numbers to:
+!reports/night_bands.json
+!reports/null_distribution.png
 .venv/
 venv/
 # Quarantine for the deprecated alpaca-trade-api SDK (this repo uses alpaca-py).

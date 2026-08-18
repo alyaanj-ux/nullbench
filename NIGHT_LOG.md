@@ -92,3 +92,33 @@ and judgment call lands here. Written for the owner's morning coffee.
   slow doc tests failed depending on WHICH TERMINAL ran pytest. Children now
   get PYTHONIOENCODING=utf-8 explicitly (`_utf8_env()` in test_docs.py).
   This was the reason the first T3 gate showed a mysterious slow failure.
+
+### T4 — bands at 200 trials, both nulls, real 15-symbol universe  ✅
+- ~29 min of compute (400 backtests + 200 resamples). Results:
+  - Real headline (15 symbols): strat +1.043 vs B&H +1.219 → **delta -0.176**.
+  - GBM null:       band **[-0.503, +0.238]**, mean -0.137, win 24%.
+  - Bootstrap null: band **[-0.508, +0.082]**, mean -0.210, win 13%.
+  - Headline lands INSIDE both (45th pctile of GBM, 57th of bootstrap).
+- **The stated expectation was WRONG, and I am reporting what came out**: the
+  bootstrap band is NOT wider — 5th–95th width 0.59 vs GBM's 0.74. It is
+  shifted DOWN and its UPPER tail is much tighter (+0.08 vs +0.24). Reading:
+  on reshuffled real returns, buy-and-hold keeps the full drift while block
+  shuffling destroys the trends SmaCross needs, so luck almost never makes the
+  strategy look good (win rate 13% vs 24%). Fat tails widen ABSOLUTE outcomes,
+  but this statistic is a delta vs benchmark — the honest conclusion is that
+  the bootstrap null makes a *positive* fluke rarer, i.e. a real positive edge
+  would be MORE convincing against bootstrap, not less. Written into README
+  as measured.
+- Mechanism decision: the 200-trial real-data bands are NOT wired into
+  refresh_docs' generated markers — that mechanism's contract is "reproducible
+  on any machine from the shipped config", and these need API keys + 30 min.
+  Instead `reports/night_bands.json` (raw deltas included) is committed as a
+  dated artifact, README's two band rows are pinned to it by
+  `test_readme_real_data_bands_match_the_artifact`, and the generic band
+  scanner exempts exactly the artifact's values (delete the artifact and the
+  exemption vanishes). Mutations verified: edited row caught twice, deleted
+  artifact caught twice, baseline green.
+- Also fixed while here: the band scanner divided a decimal band by 100 if the
+  LINE contained any % (a table row has a 24% win-rate cell) — the percent
+  conversion is now scoped to the matched pair. noise_test now returns raw
+  per-trial deltas for the T6 chart. Suite 103 (+2 slow), all gates green.

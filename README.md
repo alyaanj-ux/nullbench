@@ -253,9 +253,19 @@ selection (mean IS Sharpe 1.32) collapses to -0.11 OOS while the benchmark
 scored 1.34 on the same windows. This is the expected result for a
 one-sentence strategy on large caps, published as-is.
 
-**Caveat.** The noise band quoted elsewhere in this README is built from
-synthetic correlated GBM, which has no fat tails and no volatility clustering
-— so judging this real result against it is indicative, not rigorous.
+**Both nulls, properly powered (200 trials each, 15-symbol universe).**
+Same strategy, same real data, two different definitions of "luck":
+
+| Null (200 trials) | 5th–95th band | mean | win rate | real result lands at |
+|---|---|---|---|---|
+| GBM (synthetic random walks) | [-0.50, +0.24] | -0.14 | 24% | 45% percentile |
+| Bootstrap (own returns reshuffled) | [-0.51, +0.08] | -0.21 | 13% | 57% percentile |
+
+The real 15-symbol result (-0.18 Sharpe vs buy-and-hold) lands
+**inside both bands**. The bootstrap band is narrower
+(0.59 vs 0.74 Sharpe across the 5th–95th range) —
+on this universe the resampled returns produced a tighter spread than the GBM null; see NIGHT_LOG for the reading.
+Verdict either way: **no demonstrated edge** — the correct, expected result.
 Spot-check: our closes match Google Finance to within cents (SPY 772.62 vs
 772.67 — IEX vs consolidated tape).
 
@@ -370,7 +380,7 @@ algotrader/
 │       ├── mean_reversion.py# z-score reversion
 │       └── buy_and_hold.py  # the benchmark
 ├── scripts/run_backtest.py  # CLI entry point
-└── tests/                   # 102 tests incl. lookahead-bias check
+└── tests/                   # 103 tests incl. lookahead-bias check
 ```
 
 ## License

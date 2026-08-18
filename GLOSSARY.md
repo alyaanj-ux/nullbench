@@ -272,3 +272,27 @@ start meaning much.
 ### Regression to the mean
 Extreme results tend to be followed by more ordinary ones. A strategy's best
 year is usually part luck, and the next year is usually worse.
+
+### Fat tails
+Real market returns produce extreme days far more often than a bell curve
+predicts — moves a Gaussian model calls once-in-a-millennium happen every few
+years. A null distribution without fat tails understates what luck can do.
+
+### Volatility clustering
+Calm days follow calm days and wild days follow wild days; crashes arrive in
+bunches, not scattered uniformly. Another property real returns have and
+simple random walks do not.
+
+### Bootstrap (resampling)
+Instead of assuming a distribution for your data, reuse the data itself:
+draw from the observed returns, many times, to see the range of outcomes they
+could have produced. The null becomes "your own market, reshuffled" rather
+than "an idealised random walk".
+
+### Block resampling (stationary bootstrap)
+Resampling one day at a time destroys volatility clustering. Resampling in
+blocks — here, runs of geometrically distributed length averaging ~20 trading
+days, per Politis–Romano — keeps short-range structure intact while still
+scrambling any longer sequence a strategy could exploit. This project also
+uses the SAME blocks for every symbol in a trial, so the universe keeps
+moving together and cross-sectional correlation survives.

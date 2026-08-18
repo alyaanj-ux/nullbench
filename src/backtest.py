@@ -483,6 +483,9 @@ def noise_test(
     return {
         "null": null,
         "n_trials": int(d.size),
+        # Raw per-trial deltas so charts can draw the actual distribution
+        # instead of re-running 200 backtests.
+        "deltas": [round(float(x), 6) for x in d],
         "mean_delta": float(d.mean()),
         "std_delta": float(d.std(ddof=1)) if d.size > 1 else 0.0,
         "min_delta": float(d.min()),
