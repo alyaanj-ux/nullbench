@@ -1,4 +1,4 @@
-# Interview prep — algotrader
+# Interview prep — Nullbench
 
 Personal notes. Not part of the project docs.
 

@@ -267,7 +267,7 @@ def _fetch_stooq(cfg: Config, symbol: str) -> pd.DataFrame:
     # to block this tool, the string makes that easy. Low volume by design —
     # one request per symbol per day, everything else served from the cache.
     req = urllib.request.Request(url, headers={
-        "User-Agent": "algotrader/1.0 (personal-research backtester; "
+        "User-Agent": "nullbench/1.0 (personal-research backtester; "
                       "opt-in source; cached, one request per symbol per day)",
     })
 

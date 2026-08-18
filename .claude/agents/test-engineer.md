@@ -1,6 +1,6 @@
 ---
 name: test-engineer
-description: Writes and strengthens tests for the algotrader project — edge cases, property-based invariants, regression tests for fixed bugs, and coverage gaps. Use when adding test coverage, after fixing a bug, or when asked to harden the suite. Only edits files under tests/.
+description: Writes and strengthens tests for the Nullbench project — edge cases, property-based invariants, regression tests for fixed bugs, and coverage gaps. Use when adding test coverage, after fixing a bug, or when asked to harden the suite. Only edits files under tests/.
 tools: Read, Grep, Glob, Edit, Write, Bash
 model: sonnet
 effort: high

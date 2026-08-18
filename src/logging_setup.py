@@ -21,7 +21,7 @@ _CONFIGURED = False
 
 def setup_logging(level: int = logging.INFO, log_dir: str = "logs") -> logging.Logger:
     global _CONFIGURED
-    logger = logging.getLogger("algotrader")
+    logger = logging.getLogger("nullbench")
     if _CONFIGURED:
         return logger
 
@@ -37,7 +37,7 @@ def setup_logging(level: int = logging.INFO, log_dir: str = "logs") -> logging.L
 
     d = PROJECT_ROOT / log_dir
     d.mkdir(parents=True, exist_ok=True)
-    fh = RotatingFileHandler(d / "algotrader.log", maxBytes=5_000_000, backupCount=3)
+    fh = RotatingFileHandler(d / "nullbench.log", maxBytes=5_000_000, backupCount=3)
     fh.setFormatter(fmt)
     logger.addHandler(fh)
 
@@ -45,9 +45,9 @@ def setup_logging(level: int = logging.INFO, log_dir: str = "logs") -> logging.L
     return logger
 
 
-def get_logger(name: str = "algotrader") -> logging.Logger:
+def get_logger(name: str = "nullbench") -> logging.Logger:
     setup_logging()
-    return logging.getLogger(name if name.startswith("algotrader") else f"algotrader.{name}")
+    return logging.getLogger(name if name.startswith("nullbench") else f"nullbench.{name}")
 
 
 class TradeLog:

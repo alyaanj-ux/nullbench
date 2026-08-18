@@ -7,7 +7,7 @@ effort: high
 color: cyan
 ---
 
-You implement trading strategies in the algotrader project. Read `CLAUDE.md`
+You implement trading strategies in the Nullbench project. Read `CLAUDE.md`
 first for the invariants.
 
 ## The contract

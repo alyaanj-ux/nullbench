@@ -1,17 +1,18 @@
-# algotrader
+# Nullbench
 
-A paper-trading-first algorithmic trading framework for US equities. Backtest engine with an honest cost model, pluggable strategies, walk-forward validation, and an Alpaca paper-trading loop.
+Nullbench — a domain-agnostic instrument that takes a claimed result and
+measures whether it's distinguishable from luck, calibrated against data
+where the truth is already known.
+
+![One instrument, three domains, known ground truth](reports/universality.png)
 
 **Runs entirely on free APIs. No money is required, and the code physically refuses to trade a live account.**
 
 ## The instrument
 
-This project began as a trading bot and became something more useful: a
-**domain-agnostic instrument that tells real results apart from noise** — and
-that has been made to prove it in both directions, on data where the truth is
-already known.
-
-![One instrument, three domains, known ground truth](reports/universality.png)
+This project began as a trading bot and became something more useful: an
+instrument proven to read correctly in BOTH directions, on data where the
+truth is already known.
 
 | Domain | Ground truth | Instrument's verdict | The number |
 |---|---|---|---|
@@ -75,7 +76,7 @@ there is none is the deliverable.*
 ## Quick start (60 seconds, no signup)
 
 ```bash
-git clone <your-repo> && cd algotrader
+git clone <your-repo> && cd nullbench
 pip install -r requirements.txt
 python scripts/run_backtest.py --synthetic --benchmark
 ```
@@ -434,7 +435,7 @@ Treat profitable trading as an unlikely bonus and the learning as the actual ret
 ## Project layout
 
 ```
-algotrader/
+nullbench/
 ├── config.yaml              # all tunable parameters
 ├── .env.example             # API key template
 ├── src/

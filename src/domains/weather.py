@@ -32,7 +32,7 @@ from ..logging_setup import get_logger
 log = get_logger("weather")
 
 ARCHIVE_URL = "https://archive-api.open-meteo.com/v1/archive"
-USER_AGENT = ("algotrader-universality/1.0 "
+USER_AGENT = ("nullbench/1.0 "
               "(personal research; cache-first; low volume)")
 START_DATE = "1980-01-01"
 

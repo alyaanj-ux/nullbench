@@ -4,9 +4,11 @@ Context for Claude Code working in this repo.
 
 ## What this is
 
-A paper-trading-first algorithmic trading framework for US equities. Backtest
-engine, pluggable strategies, walk-forward validation, and an Alpaca paper
-trading loop. Runs entirely on free APIs.
+**Nullbench**: a domain-agnostic instrument that takes a claimed result and
+measures whether it's distinguishable from luck, calibrated against data
+where the truth is already known. It grew out of (and still contains) a
+paper-trading-first backtesting framework for US equities — domain #1 of
+three. Runs entirely on free APIs.
 
 **Purpose is education and portfolio quality, not profit.** Optimize suggestions
 for correctness, honesty, and clear engineering — not for making the backtest
