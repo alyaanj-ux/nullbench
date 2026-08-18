@@ -5,10 +5,13 @@ __pycache__/
 data/cache/
 logs/
 state/
-reports/
+reports/*
 # ...except committed, dated artifacts that tests pin numbers to:
 !reports/night_bands.json
 !reports/null_distribution.png
+!reports/anchor_200_check.json
+!reports/weather_validation.json
+!reports/synthetic_noise_validation.json
 .venv/
 venv/
 # Quarantine for the deprecated alpaca-trade-api SDK (this repo uses alpaca-py).
