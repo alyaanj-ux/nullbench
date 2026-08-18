@@ -118,3 +118,21 @@ are the core, T5–T7 skippable; hard rules of NIGHT_SHIFT_2.md unchanged.
   fast suite and GBM/extra trials in slow. 5 mutants killed (seed shift,
   evaluate drift, verdict-at-p5, flipped percentile, stuck trial index).
 - All 105 pre-existing tests untouched and green.
+
+### Post-halt housekeeping note (12:5x)
+- Found while landing the final commit: `reports/night_bands.json` and
+  `null_distribution.png` were NEVER actually tracked — night 1's gitignore
+  used `reports/` (a directory pattern), and git cannot re-include children
+  of an excluded directory; `git add -A` skips ignored files silently, so
+  the "committed artifact" claim was false until today. The pattern is now
+  `reports/*` (children excluded individually, negations work) and all five
+  artifacts are verifiably in `git ls-files`. The doc tests never caught it
+  because they read the file from DISK, which existed — worth a future test
+  asserting pinning artifacts are tracked, noted for the owner.
+- `scripts/check.py` appears to hang when invoked in the same shell command
+  as a git commit (observed twice, both report commits; runs clean alone,
+  18s). Suspect PostToolUse-hook contention on the pytest cache. Benign but
+  noted.
+- Final state: tree green (115 fast + 3 slow), all artifacts tracked, halt
+  per stop condition. DAY_REPORT.md committed as `7bbf11e`, this entry as
+  the follow-up.
