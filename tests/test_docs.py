@@ -162,7 +162,10 @@ def test_documented_noise_band_matches_the_snapshot():
     checked = 0
     # GLOSSARY.md is scanned too: an audit planted a stale band there and
     # nothing noticed, because the list stopped at the three "main" docs.
-    for doc in ("README.md", "INTERVIEW_PREP.md", "CLAUDE.md", "GLOSSARY.md"):
+    # INTERVIEW_PREP lives in dev-notes/ (unpublished, owner's notes) but is
+    # still scanned when present — it is read aloud, staleness matters most.
+    for doc in ("README.md", "dev-notes/INTERVIEW_PREP.md", "CLAUDE.md",
+                "GLOSSARY.md", "docs/design.md"):
         path = ROOT / doc
         if not path.exists():
             continue
@@ -210,13 +213,17 @@ def test_interview_numbers_to_know_cold_are_pinned():
     read out loud to an interviewer — and the suite stayed green, because only
     the band row was pinned.
     """
+    prep = ROOT / "dev-notes" / "INTERVIEW_PREP.md"
+    if not prep.exists():
+        pytest.skip("owner's notes not present in this clone (dev-notes/ is "
+                    "unpublished); the guard runs on the owner's machine")
     snap = _snapshot()
-    text = (ROOT / "INTERVIEW_PREP.md").read_text(encoding="utf-8")
+    text = prep.read_text(encoding="utf-8")
 
     def row(label: str) -> str:
         m = re.search(rf"^\|\s*{re.escape(label)}[^|]*\|\s*([^|]+)\|",
                       text, re.MULTILINE)
-        assert m, f"INTERVIEW_PREP.md table has no row {label!r}"
+        assert m, f"INTERVIEW_PREP table has no row {label!r}"
         return m.group(1).strip()
 
     # Win rate: the snapshot stores it; the table quotes it.
@@ -266,7 +273,7 @@ def test_readme_real_data_bands_match_the_artifact():
     artifact = ROOT / "reports" / "night_bands.json"
     assert artifact.exists(), (
         "reports/night_bands.json is missing but README quotes real-data "
-        "bands — regenerate it (see NIGHT_LOG) or remove the rows"
+        "bands — regenerate it (scripts in the repo) or remove the rows"
     )
     nb = json.loads(artifact.read_text(encoding="utf-8"))
     text = README.read_text(encoding="utf-8")

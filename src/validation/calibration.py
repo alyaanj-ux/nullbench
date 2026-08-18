@@ -2,7 +2,7 @@
 
 The zero test measured that the anomaly-shuffle null carries a +0.016
 calibration bias for skill statistics (a permutation strengthens the
-climatology baseline slightly; NIGHT_LOG_2.md has the full diagnosis). The
+climatology baseline slightly; diagnosis summarized below). The
 ruling: measure the zero point directly and subtract it, the way any bench
 instrument is zeroed against a known blank.
 

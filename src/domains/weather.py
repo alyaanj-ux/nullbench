@@ -1,6 +1,6 @@
 """Weather data adapter: Open-Meteo archive -> daily mean temperature series.
 
-Domain #2 of the universality proof (DESIGN_UNIVERSAL.md). Open-Meteo's
+Domain #2 of the universality proof (docs/design.md). Open-Meteo's
 archive API is keyless and free for non-commercial use, CC BY 4.0 — the
 attribution line lives in the README. API etiquette: one request per city,
 >= 1 second apart, cache-first through the same disk-cache machinery the
@@ -36,7 +36,7 @@ USER_AGENT = ("nullbench/1.0 "
               "(personal research; cache-first; low volume)")
 START_DATE = "1980-01-01"
 
-# name -> (latitude, longitude). Fixed by DESIGN_UNIVERSAL.md.
+# name -> (latitude, longitude). Fixed by docs/design.md.
 CITIES: dict[str, tuple[float, float]] = {
     "NYC": (40.71, -74.01),
     "London": (51.51, -0.13),

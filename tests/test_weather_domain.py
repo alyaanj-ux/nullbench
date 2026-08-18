@@ -1,5 +1,5 @@
 """Tests for the weather domain — including the executable proof of the
-null trap from DESIGN_UNIVERSAL.md.
+null trap from docs/design.md.
 
 The trap: applying the market's ~20-day block bootstrap to weather would
 preserve day-to-day persistence inside every block, so the null would still

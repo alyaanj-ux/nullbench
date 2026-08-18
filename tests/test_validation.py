@@ -1,6 +1,6 @@
 """Anchor tests for the domain-agnostic harness.
 
-The refactor's contract (DESIGN_UNIVERSAL.md): a market run through the NEW
+The refactor's contract (docs/design.md): a market run through the NEW
 harness reproduces reports/night_bands.json exactly. Two layers:
 
   * statistics layer, zero backtests: feeding the artifact's raw deltas into
@@ -10,7 +10,7 @@ harness reproduces reports/night_bands.json exactly. Two layers:
     real universe must equal the artifact's deltas[0] / headline delta. The
     trial-0 check is strong: identical seeds mean one matching draw implies
     the whole path matches. (Full 200-trial reproduction was run once and
-    logged in NIGHT_LOG_2.md; repeating 30 minutes of compute per test run
+    committed as reports/anchor_200_check.json; repeating 30 minutes of compute per test run
     buys nothing further.)
 """
 

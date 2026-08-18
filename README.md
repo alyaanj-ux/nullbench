@@ -322,7 +322,7 @@ Same strategy, same real data, two different definitions of "luck":
 The real 15-symbol result (-0.18 Sharpe vs buy-and-hold) lands
 **inside both bands**. The bootstrap band is narrower
 (0.59 vs 0.74 Sharpe across the 5th–95th range) —
-on this universe the resampled returns produced a tighter spread than the GBM null; see NIGHT_LOG for the reading.
+on this universe the resampled returns produced a tighter spread than the GBM null — reshuffling preserves buy-and-hold's drift while destroying the trends the strategy needs, so lucky positive deltas get rarer.
 Verdict either way: **no demonstrated edge** — the correct, expected result.
 
 **The full gauntlet, both strategies (15 symbols, 2020-07 → 2026-08).** Read

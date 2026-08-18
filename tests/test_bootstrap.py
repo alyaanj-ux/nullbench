@@ -1,7 +1,7 @@
 """Tests for the stationary block bootstrap null.
 
 The properties that matter, each with a mutant that was proven to break it
-before shipping (see NIGHT_LOG):
+before shipping (mutation-verified at build time):
 
   * determinism ACROSS PROCESSES (blake2b seeds, never hash())
   * cross-sectional correlation preserved (joint blocks; per-symbol

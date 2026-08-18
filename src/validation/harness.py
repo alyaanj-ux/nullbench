@@ -6,7 +6,7 @@ neither is the machinery that answers it — walk-forward evaluation, a
 200-trial null band, percentile placement, a verdict. This module extracts
 that machinery so any domain can use it.
 
-A domain supplies five things (DESIGN_UNIVERSAL.md):
+A domain supplies five things (docs/design.md):
 
     series      the real data (opaque to the harness — dict of frames for
                 markets, dict of Series for weather)

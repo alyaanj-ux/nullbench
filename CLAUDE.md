@@ -196,7 +196,7 @@ fixes:
 | `end: null` cached as a literal `"latest"` that never expires — the next day's run silently backtested yesterday's file | Nothing keyed the cache to a calendar day |
 | CSV cache round-trip perturbs values ~6e-14, so cached vs uncached equity is not byte-equal (accepted; pinned to 1e-9 on Sharpe) | Only surfaced once the CSV fallback became the live path |
 
-An autonomous overnight run (see NIGHT_LOG.md / MORNING_REPORT.md) then took
+An autonomous overnight run (build logs in dev-notes/, kept local) then took
 the project onto real data for the first time and added the bootstrap null:
 
 | What happened | The lesson it left behind |
@@ -209,7 +209,7 @@ the project onto real data for the first time and added the bootstrap null:
 | A Python child's pipe encoding follows the launching shell (utf-8 under PowerShell, cp1252 under Git Bash): the slow doc tests failed depending on which terminal ran pytest | Subprocess tests pin PYTHONIOENCODING on the child, not just the capture side |
 | The band scanner divided a decimal band by 100 when the LINE contained any "%" (a table row has a win-rate cell) | Scope heuristics to the match, not the line |
 
-The universality run (day 2, DAY_REPORT.md) then took the validator out of
+The universality run (day 2; log in dev-notes/) then took the validator out of
 finance entirely:
 
 | What happened | The lesson it left behind |

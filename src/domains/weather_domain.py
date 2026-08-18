@@ -1,6 +1,6 @@
 """WeatherDomain: the load-bearing REAL of the universality proof.
 
-Predictors (DESIGN_UNIVERSAL.md, fixed):
+Predictors (docs/design.md, fixed):
     persistence  T-hat(t+1) = T(t)
     trend_k      T-hat(t+1) = T(t) + (T(t) - T(t-k)) / k,   k in {1, 3, 5}
 Baseline: climatology — the day-of-year mean computed from TRAINING data
@@ -18,7 +18,7 @@ Seasonality survives; day-to-day persistence dies. This is the OPPOSITE
 choice from the market's 20-day block bootstrap, on purpose: the weather
 signal IS short-range structure, and blocks would smuggle it into the null.
 
-Interpretation note, logged in NIGHT_LOG_2: the spec says the null's
+Interpretation note: the spec says the null's
 climatology comes from "training data only". At null-construction time there
 is no single train/test split (37 expanding folds), so the decomposition here
 uses the full-series climatology; the SCORING path recomputes climatology

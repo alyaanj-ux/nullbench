@@ -9,8 +9,9 @@ Mapping to the five-part spec:
 
 `evaluate` composes predict/baseline/score exactly the way `noise_test` does,
 so the new path must reproduce reports/night_bands.json byte-for-byte — the
-anchor tests in tests/test_validation.py enforce that, and the full-200
-reproduction is logged in NIGHT_LOG_2.md.
+anchor tests in tests/test_validation.py enforce that, and the one-time
+full-200 reproduction is committed as reports/anchor_200_check.json
+(400/400 deltas exact at 6dp).
 """
 
 from __future__ import annotations

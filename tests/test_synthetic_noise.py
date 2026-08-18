@@ -2,9 +2,10 @@
 
 The generator's job is to be provably structureless: deterministic across
 processes and free of lag-1 autocorrelation. The VERDICT it produced against
-the anomaly-shuffle null is a separate story — see NIGHT_LOG_2.md: the data
-is clean (fresh-draw distribution centred on the measured statistic); the
-null carries a small calibration bias that the log documents.
+the anomaly-shuffle null is a separate story — see the owner's ruling in
+docs/design.md and reports/calibration.json: the data is clean (fresh-draw
+distribution centred on the measured statistic); the null carries a small,
+now-zeroed calibration bias.
 """
 
 from __future__ import annotations
