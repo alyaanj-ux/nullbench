@@ -47,3 +47,23 @@ and judgment call lands here. Written for the owner's morning coffee.
 - Spot-check vs Google Finance: SPY 772.62 vs 772.67, prev 776.30 vs 776.34;
   NVDA 225.16 exact on 08-14. Cents-level IEX-vs-SIP differences. Fine.
 - README: `## Results on real data` section added. Fast suite green (95).
+
+### T2 — real-data cache, 15 symbols  ✅
+- Universe → 15 large caps across sectors, `start: 2015-01-01`, adjustment all.
+  Fetched one at a time, ≥1.2s apart (~18s total, far under the rate limit).
+- Reality check on the free feed: asked for 2015, got **2020-07-27 onward** for
+  everything (SPY additionally carries a stray 2018-11→2018-? fragment then a
+  634-day hole). The IEX free tier simply does not serve deeper daily history.
+  Effective universe: 15 symbols × 1519–1523 bars, intersection 1519.
+- Audit: **0 errors, 12 warnings.** My read on each warning:
+  - META 2022-02-03 (-26.3%) and 2022-10-27 (-24.5%): the two famous earnings
+    crashes. REAL, correctly warned as large_gap, correctly NOT called splits.
+  - NVDA 2023-05-25 (+24.3%): real (AI-guidance quarter). Same.
+  - TSLA 3 sessions >20% (largest +22.6% 2025-04-09), UNH -22.4% 2025-04-17:
+    real vol / guidance shock. Warnings only.
+  - SPY large_gap/flat_bar/calendar_gaps: artifacts of the 634-day feed hole,
+    all on the discarded side of the intersection.
+  - Notably SILENT: AMZN 20:1 (2022-06), GOOGL 20:1 (2022-07), TSLA 3:1
+    (2022-08) — all inside the window, all invisible because adjustment=all
+    is doing its job. More empirical confirmation of the T1 finding.
+- Committed config change only; cache stays gitignored.

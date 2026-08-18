@@ -6,11 +6,11 @@
 universe:
   # Keep this small. More symbols = more API calls = more rate-limit pain,
   # and it does not make a bad strategy good.
-  symbols: [SPY, QQQ, AAPL, MSFT, NVDA]
+  symbols: [SPY, QQQ, AAPL, MSFT, NVDA, AMZN, GOOGL, META, TSLA, JPM, XOM, JNJ, PG, UNH, HD]
 
 data:
   timeframe: "1Day"        # "1Min", "5Min", "15Min", "1Hour", "1Day"
-  start: "2018-01-01"
+  start: "2015-01-01"
   end: null                # null = up to today
   source: "alpaca"         # official API, free keys in .env, supports intraday.
                            # "stooq" = keyless, daily only. NOTE: stooq.com's robots.txt
