@@ -131,3 +131,18 @@ and judgment call lands here. Written for the owner's morning coffee.
   to +0.5 beyond the GBM band edge, even though the bootstrap p95 is tighter.
   Rendered from reports/night_bands.json, so chart and README rows share one
   source of truth. Embedded at the top of README with a one-line caption.
+
+### T5 — both strategies, full gauntlet, real data  ✅
+- Benchmark buy-and-hold Sharpe on the 15-symbol universe: +1.219.
+- sma_cross sensitivity: **1 of 15 cells beats the benchmark** (50/100 at
+  +0.07 — a single standout cell, the classic overfit shape). The config
+  default (20/100) has edge -0.176, consistent with T4's headline ✓.
+  Walk-forward: mean OOS edge **-0.76**, 0/4 folds positive.
+- mean_reversion sensitivity: **1 of 16 cells positive** (20/0.5 at +0.08,
+  same single-cell shape). Config default (20/1.0): edge -0.415.
+  Walk-forward: mean OOS edge **-0.49**, 0/4 folds positive. Interesting: MR
+  degrades less OOS than the trend strategy, but still loses every fold.
+- Both "winning" cells sit deep inside both T4 null bands — even the best
+  in-sample cherry-pick is indistinguishable from luck.
+- No cherry-picking: config-default rows reported in README regardless of the
+  grid's best row. Full tables preserved here and in tmp t5_out.

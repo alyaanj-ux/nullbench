@@ -273,6 +273,20 @@ The real 15-symbol result (-0.18 Sharpe vs buy-and-hold) lands
 (0.59 vs 0.74 Sharpe across the 5th–95th range) —
 on this universe the resampled returns produced a tighter spread than the GBM null; see NIGHT_LOG for the reading.
 Verdict either way: **no demonstrated edge** — the correct, expected result.
+
+**The full gauntlet, both strategies (15 symbols, 2020-07 → 2026-08).** Read
+the edge column only; the config-default row is reported regardless of what
+the grid's best cell says:
+
+| | sensitivity: cells beating buy-and-hold | config-default edge | walk-forward mean OOS edge | folds positive |
+|---|---|---|---|---|
+| `sma_cross` (20/100) | 1 of 15 | -0.18 | -0.76 | 0 of 4 |
+| `mean_reversion` (20/1.0) | 1 of 16 | -0.42 | -0.49 | 0 of 4 |
+
+Each grid's single positive cell (+0.07 and +0.08 respectively) is exactly the
+"one spiking cell surrounded by losses" shape the sensitivity section warns
+about — and both values sit deep inside both null bands above. Neither
+strategy demonstrates an edge on real data. Published as measured.
 Spot-check: our closes match Google Finance to within cents (SPY 772.62 vs
 772.67 — IEX vs consolidated tape).
 
