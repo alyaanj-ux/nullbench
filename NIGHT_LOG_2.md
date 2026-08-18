@@ -209,3 +209,20 @@ are the core, T5–T7 skippable; hard rules of NIGHT_SHIFT_2.md unchanged.
   the prover on known ground truth. Numbers synced (36 defects, 120 tests).
 - CLAUDE.md: hard rule 7 recorded as a STANDING POLICY for all future
   sessions, and the universality run's six-row record appended.
+
+### T7 (stretch) — the live forward-prediction log  ✅  (13:40)
+- `scripts/predict_tomorrow.py`: forecast endpoint (past_days=8), predicts
+  TOMORROW for all 10 cities with persistence + trend k∈{1,3,5}. Honesty
+  detail: today's partial day is never used as history — persistence runs
+  off the last COMPLETE day, and each line records that base_date. One
+  timestamped JSON line per city+predictor, APPEND-ONLY.
+- **First real cycle executed**: 40 lines for target 2026-08-19, made_at
+  2026-08-18T17:34:54Z, committed — falsifiable before the fact.
+- `scripts/score_predictions.py`: grades due lines (archive lag 2 days)
+  against actuals, climatology built strictly from data BEFORE the target
+  (the no-lookahead rule follows the prediction to its grave), appends to
+  predictions_scored.jsonl, never rewrites. Dry run correctly reports
+  "40 pending, none due yet".
+- 5 scorer tests on synthetic lines; 3 mutants killed (skill sign flipped,
+  scores-before-due, lookahead climatology). Suite 125 (+3 slow).
+- Owner's morning ritual from tomorrow: `python scripts/score_predictions.py`.

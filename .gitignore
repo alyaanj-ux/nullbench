@@ -12,6 +12,11 @@ reports/*
 !reports/anchor_200_check.json
 !reports/weather_validation.json
 !reports/synthetic_noise_validation.json
+!reports/universality.json
+!reports/universality.png
+!reports/calibration.json
+!reports/predictions.jsonl
+!reports/predictions_scored.jsonl
 .venv/
 venv/
 # Quarantine for the deprecated alpaca-trade-api SDK (this repo uses alpaca-py).

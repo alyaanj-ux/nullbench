@@ -1,0 +1,40 @@
+{
+ "_comment": "The universality result: one instrument, three domains, known ground truth. Sources: night_bands.json, weather_validation.json, synthetic_noise_validation.json, calibration.json.",
+ "market": {
+  "statistic": -0.1759,
+  "unit": "Sharpe delta vs buy-and-hold",
+  "null": "stationary block bootstrap (destroys trends)",
+  "p5": -0.507857568571561,
+  "p95": 0.08228664288608761,
+  "percentile": 0.575,
+  "required": "NOISE",
+  "verdict": "NOISE"
+ },
+ "weather": {
+  "statistic": 0.343959,
+  "calibrated": 0.732728,
+  "zero_offset": -0.388769,
+  "resolution": 0.009146,
+  "unit": "MAE skill vs climatology (persistence)",
+  "null": "anomaly shuffle (destroys persistence)",
+  "p5": -0.405897,
+  "p95": -0.398912,
+  "percentile": 1.0,
+  "required": "REAL",
+  "verdict": "REAL"
+ },
+ "synthetic_noise": {
+  "statistic": -0.390001,
+  "calibrated": -0.001232,
+  "zero_offset": -0.388769,
+  "resolution": 0.009146,
+  "unit": "MAE skill vs climatology (persistence)",
+  "null": "anomaly shuffle (same pipeline, generated data)",
+  "p5": -0.40816,
+  "p95": -0.399878,
+  "percentile": 1.0,
+  "required": "NOISE",
+  "verdict": "NOISE"
+ },
+ "calibration_date": "2026-08-18"
+}

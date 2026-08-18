@@ -17,7 +17,7 @@ numbers look better.
 ```bash
 pip install -r requirements.txt
 
-python -m pytest tests/ -q                                  # tests (120, +3 slow)
+python -m pytest tests/ -q                                  # tests (125, +3 slow)
 python -m pytest -m slow                                    # re-runs real backtests (~1 min)
 python scripts/refresh_docs.py                              # regenerate README's quoted numbers
 python scripts/run_backtest.py --synthetic --benchmark      # no API keys needed
@@ -27,6 +27,8 @@ python scripts/run_backtest.py --sensitivity                # parameter grid
 python scripts/run_backtest.py --walk-forward               # out-of-sample test
 python scripts/run_backtest.py --synthetic --noise-test     # null distribution
 python scripts/run_backtest.py --noise-test --null bootstrap # null from resampled REAL returns
+python scripts/predict_tomorrow.py                          # falsifiable weather predictions (append-only)
+python scripts/score_predictions.py                         # grade any due prediction lines
 python -m src.live --once                                   # one dry-run cycle
 python -m src.live --live-orders                            # submit to paper account
 ```
