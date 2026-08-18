@@ -410,7 +410,7 @@ Being explicit about what this does *not* model, because unlisted assumptions ar
 
 - **Market impact** — assumes your order doesn't move the price. Fine at retail size, false at scale.
 - **Partial fills** — every order fills completely at one price.
-- **Dividends and corporate actions** — not adjusted for. Meaningfully understates returns on dividend payers.
+- **Dividends and corporate actions** — bars arrive split- and dividend-adjusted (`adjustment: "all"`), which makes buy-and-hold a fair total-return benchmark. But cash dividend timing, reinvestment mechanics, symbol changes and delistings are not modelled.
 - **Borrow costs on shorts** — shorting is free here. It isn't in reality.
 - **Taxes** — short-term gains are taxed as ordinary income in the US. This can be 30%+ of your profit.
 - **Survivorship bias** — if you build your own symbol list from today's index members, you've implicitly selected for companies that survived.
@@ -455,6 +455,13 @@ nullbench/
 └── tests/                   # 125 tests incl. lookahead-bias check
 ```
 
-## License
+## License & attribution
 
-MIT. Do what you like with it.
+MIT — see [LICENSE](LICENSE). Copyright (c) 2026 Alyaan Junaid.
+
+- Weather data by [Open-Meteo](https://open-meteo.com/), used under
+  [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+- Market data via [Alpaca Market Data](https://alpaca.markets/) (free IEX
+  feed) under their terms; bring your own free API keys.
+- Neither provider endorses this project. Nothing here is financial advice,
+  and the code refuses to trade a live account on purpose.

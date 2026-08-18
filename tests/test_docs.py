@@ -198,9 +198,15 @@ def test_documented_noise_band_matches_the_snapshot():
                     f"{doc}:{i} quotes an upper bound of {hi_f}, "
                     f"current is {p95:+.3f} — line: {line.strip()!r}"
                 )
-    assert checked >= 2, (
-        f"only {checked} band(s) were checked — the regex or the docs changed "
-        f"shape, so this test is no longer guarding anything"
+    # The vacuousness floor scales with which docs exist: the owner's
+    # dev-notes carry extra quotable bands, a published clone has fewer.
+    # Found by the fresh-clone publish test — a fixed >=2 floor failed on any
+    # machine without dev-notes/ while guarding nothing extra on machines
+    # with it.
+    floor = 2 if (ROOT / "dev-notes" / "INTERVIEW_PREP.md").exists() else 1
+    assert checked >= floor, (
+        f"only {checked} band(s) were checked (floor {floor}) — the regex or "
+        f"the docs changed shape, so this test is no longer guarding anything"
     )
 
 
