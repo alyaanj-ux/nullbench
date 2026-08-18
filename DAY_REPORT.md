@@ -88,3 +88,73 @@ Last checkpoint for resume: the DAY_REPORT commit on top of `bf07bbe`.
 
 — day shift, signing off at the halt. Two verdicts right, one honest
 miss that measured the instrument's resolution. That's a good day.
+
+---
+
+# Session 2 — the ruling implemented, queue completed (resumed 12:59, done 13:45)
+
+**Queue complete: calibration + T5 + T6 + T7, zero reverts, tree green**
+(125 fast + 3 slow, docs in sync, hook exit 0). The T4 decision unblocked
+everything; the whole remaining queue landed in 46 minutes.
+
+## The three verdicts, final form (all pinned to reports/universality.json)
+
+| Domain | Ground truth | Verdict | The number |
+|---|---|---|---|
+| Markets | no simple edge | **NOISE** ✓ | Sharpe delta -0.18, 57th pctile of its null |
+| Weather | persistence is physics | **REAL** ✓ | skill +0.344 raw / **+0.733 zeroed** — 80× resolution |
+| Synthetic noise | structureless by construction | **NOISE** ✓ | zeroed **-0.001**, inside the ±0.009 resolution |
+
+## What the ruling produced
+
+- **The instrument is zeroed** (`reports/calibration.json`): K=30 seeded
+  blanks → zero_offset -0.3888, resolution ±0.0091 (per predictor). Verdict
+  rule now: clear the null band AND |zeroed| > resolution. The synthetic
+  domain passes its new condition on all four predictors (-0.001…-0.002).
+- **Analytic cross-check, logged not tuned**: analytic no-skill = 1-√2 =
+  -0.4142; measured -0.3888; the +0.025 gap is exactly the known
+  finite-sample climatology effect (baseline MAE +2.2%). No disagreement.
+- **The chart** (`reports/universality.png`, README top): three panels;
+  weather/synthetic drawn in zero-corrected units with the resolution zone
+  shaded, so the verdict rule is literally visible — and the synthetic panel
+  shows the shuffle-null's own -0.015 bias as a bonus, the whole T4 story in
+  one picture.
+- **README rewritten**: the instrument claim leads, trading is "Domain #1",
+  ground-truth table pinned by a mutation-checked test (verdict edit, number
+  edit, deleted artifact, self-contradicting artifact — all caught).
+- **Rule-7 sweep executed and clean**: 4 coin-flip passages replaced with
+  dyno measurement language (README two-nulls, GLOSSARY noise entry,
+  INTERVIEW_PREP explainer, one test docstring). Grep now hits nothing but
+  the CLAUDE.md policy statement that names the banned words. Rule 7 is
+  recorded as a standing policy for all future sessions.
+- **T7 live**: 40 falsifiable predictions for 2026-08-19 committed with real
+  timestamps (made_at 2026-08-18T17:34:54Z), append-only; the scorer is
+  tested on synthetic lines (3 mutants killed, incl. lookahead climatology)
+  and correctly holds lines until the 2-day archive lag passes.
+
+## Commits (session 2)
+
+```
+2d3b9f4 calibration — instrument zeroed per owner ruling
+db8307e T5 universality chart + README instrument rewrite
+b7bbf12 T6 housekeeping — rule-7 sweep, glossary, interview arc, standing policy
+6628fa0 T7 forward-prediction log — 40 falsifiable lines committed
+```
+Nothing remains from the NIGHT_SHIFT_2 queue. Last checkpoint: `6628fa0`.
+
+## Three most valuable next actions
+
+1. **Tomorrow morning, run `python scripts/score_predictions.py`** — the
+   first real grades land once the archive consolidates 2026-08-19. That
+   closes the loop the owner asked for: live data, predicted before the
+   fact, scored against reality.
+2. Consider folding the calibration gate into the MARKET domain too — its
+   Sharpe-delta statistic has no measured zero yet; the same K-blanks trick
+   works with GBM universes and would put all three domains under one rule.
+3. The instrument is now presentable: the README top section + chart + the
+   interview arc are the portfolio piece. A public repo push is the natural
+   next step (mind: .env stays local, cache directories are ignored, and the
+   committed artifacts carry no secrets — verified).
+
+— session 2, signing off with the queue empty. The instrument reads right
+in both directions, and it knows its own resolution.
