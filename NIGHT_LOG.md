@@ -160,3 +160,23 @@ and judgment call lands here. Written for the owner's morning coffee.
   scanner because they match the committed artifact — the exemption mechanism
   working exactly as designed.
 - Counts: 103 fast + 2 slow, enforced by test_documented_test_count everywhere.
+
+### T8 (stretch) — first-ever execution of the live dry-run path  ✅
+- `python -m src.live --once` ran CLEAN on its first execution ever. No fix
+  was needed, so no fix-test was added.
+  - Connected to the paper account: equity $100,000, day P/L 0.00%.
+  - Fetched fresh bars for all 15 symbols (cache deliberately bypassed).
+  - SmaCross targets: 12 names long at 6.7% each (the 1/15 slot), GOOGL /
+    META / TSLA flat — consistent with the backtester's sizing rules.
+  - Dry-run broker logged 12 intended $6,666.67 buys and SUBMITTED NOTHING.
+  - `state/positions.json` written correctly; confirmed gitignored; no
+    secrets in it.
+- Two observations for the owner, documented not "fixed":
+  1. `--once` executes the rebalance even while the market is CLOSED (the
+     open-check lives in the polling loop, not in rebalance()). For a dry-run
+     smoke test at 1am that is arguably the point, but if you ever script
+     `--once` on a schedule, know that it computes targets off the last
+     session's close.
+  2. Live mode refetches all 15 symbols every cycle (use_cache=False). At the
+     default 60s poll that is 15 req/min — well under the 200/min limit, but
+     worth remembering before shrinking poll_seconds or growing the universe.
