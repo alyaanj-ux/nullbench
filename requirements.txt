@@ -10,5 +10,10 @@ alpaca-py>=0.21.0
 # Charts for the backtest report
 matplotlib>=3.7
 
+# Parquet engine for the disk cache. The cache degrades to CSV without it —
+# by design — but a fresh install should get the real thing. (This exact gap
+# bit once: the cache silently never worked for anyone without pyarrow.)
+pyarrow>=15.0
+
 # Testing
 pytest>=7.4
