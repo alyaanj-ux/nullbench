@@ -4,6 +4,13 @@ A paper-trading-first algorithmic trading framework for US equities. Backtest en
 
 **Runs entirely on free APIs. No money is required, and the code physically refuses to trade a live account.**
 
+![What luck alone produces, and where the strategy actually landed](reports/null_distribution.png)
+
+*The project's thesis in one image: 200 resamples of the real universe's own
+returns (histogram) define what luck produces; the strategy's real result
+(red) lands in the middle of it. A tool that says "no edge demonstrated" when
+there is none is the deliverable.*
+
 ```
 ┌─────────┐   ┌──────────┐   ┌───────────┐   ┌────────┐   ┌────────┐
 │  Data   │──▶│ Strategy │──▶│  Backtest │──▶│  Risk  │──▶│ Broker │

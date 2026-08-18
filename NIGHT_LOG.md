@@ -122,3 +122,12 @@ and judgment call lands here. Written for the owner's morning coffee.
   LINE contained any % (a table row has a 24% win-rate cell) — the percent
   conversion is now scoped to the matched pair. noise_test now returns raw
   per-trial deltas for the T6 chart. Suite 103 (+2 slow), all gates green.
+
+### T6 — the thesis chart  ✅
+- `reports/null_distribution.png` (committed via gitignore negation):
+  histogram of the 200 bootstrap deltas, GBM 5–95% band shaded, real result
+  (-0.18) as a red line sitting at the 57th percentile of the null mass.
+  Pleasing detail: the fat right tail is VISIBLE — isolated flukes at +0.3
+  to +0.5 beyond the GBM band edge, even though the bootstrap p95 is tighter.
+  Rendered from reports/night_bands.json, so chart and README rows share one
+  source of truth. Embedded at the top of README with a one-line caption.
