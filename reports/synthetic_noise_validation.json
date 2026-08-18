@@ -13,7 +13,7 @@
    "mean": -0.404206,
    "std": 0.00242,
    "percentile": 1.0,
-   "verdict": "REAL",
+   "verdict": "NOISE",
    "null_stats": [
     -0.400958,
     -0.403566,
@@ -215,7 +215,10 @@
     -0.404978,
     -0.406961,
     -0.407357
-   ]
+   ],
+   "zero_offset": -0.388769,
+   "resolution": 0.009146,
+   "calibrated": -0.001232
   },
   "trend_1": {
    "statistic": -1.403498,
@@ -224,7 +227,7 @@
    "mean": -1.428944,
    "std": 0.00524,
    "percentile": 1.0,
-   "verdict": "REAL",
+   "verdict": "NOISE",
    "null_stats": [
     -1.422196,
     -1.427791,
@@ -426,7 +429,10 @@
     -1.428375,
     -1.431267,
     -1.438341
-   ]
+   ],
+   "zero_offset": -1.402244,
+   "resolution": 0.020123,
+   "calibrated": -0.001254
   },
   "trend_3": {
    "statistic": -0.669805,
@@ -435,7 +441,7 @@
    "mean": -0.687341,
    "std": 0.002956,
    "percentile": 1.0,
-   "verdict": "REAL",
+   "verdict": "NOISE",
    "null_stats": [
     -0.684802,
     -0.684878,
@@ -637,7 +643,10 @@
     -0.687225,
     -0.689995,
     -0.689307
-   ]
+   ],
+   "zero_offset": -0.668904,
+   "resolution": 0.011367,
+   "calibrated": -0.000901
   },
   "trend_5": {
    "statistic": -0.548096,
@@ -646,7 +655,7 @@
    "mean": -0.563097,
    "std": 0.002692,
    "percentile": 1.0,
-   "verdict": "REAL",
+   "verdict": "NOISE",
    "null_stats": [
     -0.559566,
     -0.56261,
@@ -848,7 +857,10 @@
     -0.564283,
     -0.56579,
     -0.566465
-   ]
+   ],
+   "zero_offset": -0.54609,
+   "resolution": 0.009648,
+   "calibrated": -0.002006
   }
  }
 }

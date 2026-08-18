@@ -136,3 +136,35 @@ are the core, T5–T7 skippable; hard rules of NIGHT_SHIFT_2.md unchanged.
 - Final state: tree green (115 fast + 3 slow), all artifacts tracked, halt
   per stop condition. DAY_REPORT.md committed as `7bbf11e`, this entry as
   the follow-up.
+
+## Session 2 (resumed 12:59, same deadline 19:00 / soft stop 18:20)
+
+- Owner's T4 ruling received: **zero the instrument** (option 1). The
+  synthetic domain is promoted to a permanent calibration standard;
+  DESIGN_UNIVERSAL.md amended to record the ruling. Queue continues: T5, T6
+  (incl. the rule-7 gambling sweep), T7 if time allows.
+
+### Calibration — the instrument is zeroed  ✅  (13:20)
+- DESIGN_UNIVERSAL.md amended with the owner's ruling verbatim-in-substance.
+- `src/validation/calibration.py`: K=30 independent seeded structureless
+  universes (blake2b "calibration-{k}-{city}", sigma-matched to the real
+  panel) through the identical pipeline → `reports/calibration.json`
+  (committed) with zero_offset + resolution per predictor and the full skill
+  vectors + seed tag.
+- Measured: persistence zero_offset **-0.3888**, resolution **0.0091**
+  (trend_1 -1.4022/0.0201, trend_3 -0.6689/0.0114, trend_5 -0.5461/0.0096).
+- **Analytic cross-check, logged not tuned**: analytic no-skill for
+  persistence on iid Gaussian = 1-√2 = -0.4142. Measured -0.3888, gap
+  +0.0254 — the size and sign of the known fold-climatology baseline
+  inflation (+2.2% on the denominator MAE ≈ +0.029 on skill). Consistent;
+  no disagreement beyond the explainable effect.
+- Verdicts restated under the new rule (band AND |calibrated| > resolution):
+  - weather persistence: raw +0.344, **calibrated +0.733**, 80× resolution →
+    **REAL**. Trends +1.48/+0.86/+0.80 calibrated, all REAL.
+  - synthetic noise: calibrated **-0.001…-0.002**, all inside resolution →
+    **NOISE**. The zero test now PASSES its new condition on all four
+    predictors.
+  - market path untouched: uncalibrated ValidationResult behaves exactly as
+    before (anchor tests still pin it).
+- 4 new tests, 4 mutants killed (hash seeding; K-collapse; verdict gate
+  removed; zero_offset zeroed). Suite 119 fast + 3 slow, docs in sync.

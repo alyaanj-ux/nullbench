@@ -85,6 +85,12 @@ class ValidationResult:
     n_trials: int
     statistic: float                    # the real result
     null_stats: list[float] = field(default_factory=list)
+    # Instrument zeroing (owner's T4 ruling). When set, the verdict demands
+    # |calibrated| > resolution ON TOP of clearing the null band. When None,
+    # behaviour is exactly the pre-calibration harness — the market anchor
+    # tests pin that path byte-for-byte.
+    zero_offset: float | None = None
+    resolution: float | None = None
 
     @property
     def _d(self) -> np.ndarray:
@@ -112,18 +118,37 @@ class ValidationResult:
         return float((self._d < self.statistic).mean())
 
     @property
+    def calibrated(self) -> float | None:
+        """raw statistic minus the measured zero point, when calibrated."""
+        if self.zero_offset is None:
+            return None
+        return self.statistic - self.zero_offset
+
+    @property
     def verdict(self) -> str:
-        """REAL only above the 95th percentile of luck. Everything else —
-        inside the band, or below it — is NOISE: not distinguishable from
-        (or worse than) what the null produces."""
-        return "REAL" if self.statistic > self.p95 else "NOISE"
+        """REAL only above the 95th percentile of luck — and, when the
+        instrument is calibrated, only if the zeroed statistic also exceeds
+        the measured resolution. The zero test taught us why: the shuffle
+        null carries a small fixed bias, and a band 0.008 wide will call any
+        structureless series "REAL" without the second condition."""
+        if self.statistic <= self.p95:
+            return "NOISE"
+        if self.zero_offset is not None and self.resolution is not None:
+            if abs(self.calibrated) <= self.resolution:
+                return "NOISE"
+        return "REAL"
 
     def sentence(self) -> str:
+        cal = ""
+        if self.zero_offset is not None:
+            cal = (f" | calibrated {self.calibrated:+.3f} "
+                   f"(zero {self.zero_offset:+.3f}, "
+                   f"resolution {self.resolution:.3f})")
         return (
             f"{self.domain}: statistic {self.statistic:+.3f} vs null band "
-            f"[{self.p5:+.3f}, {self.p95:+.3f}] ({self.n_trials} trials) -> "
-            f"{self.verdict} (sits at the {self.percentile:.0%} percentile "
-            f"of luck)"
+            f"[{self.p5:+.3f}, {self.p95:+.3f}] ({self.n_trials} trials)"
+            f"{cal} -> {self.verdict} (sits at the {self.percentile:.0%} "
+            f"percentile of luck)"
         )
 
 

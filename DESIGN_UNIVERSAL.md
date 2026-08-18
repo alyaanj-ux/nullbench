@@ -143,3 +143,29 @@ harness path.** That reproduction is the refactor's regression anchor.
 
 Zero. The only external API (Open-Meteo) is keyless. No secrets touch this
 mission — `.env` is not read.
+
+## Owner's ruling (2026-08-18): zero the instrument
+
+The T4 zero test measured a +0.016 calibration bias in the anomaly-shuffle
+null (permutation strengthens the climatology baseline; full diagnosis in
+NIGHT_LOG_2.md). Ruling: the synthetic domain is PROMOTED from a pass/fail
+test to a permanent calibration standard.
+
+1. **zero_offset** = mean measured skill of structureless data through the
+   identical domain+null pipeline, over K >= 30 independent seeded synthetic
+   universes. **resolution** = width of that zero distribution's central 95%.
+   Both live in a committed artifact `reports/calibration.json` with the seed
+   set, one entry per predictor.
+2. **calibrated_skill** = raw_skill - zero_offset, always reported alongside
+   the raw number.
+3. **Verdict rule**: REAL requires clearing the null band AND
+   |calibrated_skill| > resolution.
+4. **The zero test's pass condition**: calibrated synthetic skill ~ 0 within
+   resolution.
+5. **Analytic cross-check, logged not tuned**: for persistence on i.i.d.
+   Gaussian anomalies the no-skill level is analytically 1 - sqrt(2)
+   (~ -0.414) with the climatology known exactly. The measured zero_offset
+   sits above it by construction — finite-sample climatology estimation
+   inflates the baseline MAE — and the comparison is recorded every time
+   calibration runs. Disagreement beyond that known effect is a stop signal,
+   never something to tune away.

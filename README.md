@@ -401,7 +401,7 @@ algotrader/
 │       ├── mean_reversion.py# z-score reversion
 │       └── buy_and_hold.py  # the benchmark
 ├── scripts/run_backtest.py  # CLI entry point
-└── tests/                   # 115 tests incl. lookahead-bias check
+└── tests/                   # 119 tests incl. lookahead-bias check
 ```
 
 ## License
