@@ -189,3 +189,23 @@ are the core, T5–T7 skippable; hard rules of NIGHT_SHIFT_2.md unchanged.
   4 mutants killed (verdict edited, number edited, artifact deleted,
   artifact self-contradicting required != verdict). Suite 120 (+3 slow),
   docs in sync.
+
+### T6 — housekeeping + the rule-7 sweep  ✅  (14:2x)
+- **Gambling sweep**: four genuine offenders found and replaced with dyno
+  measurement language, logged here per spec:
+  1. README "Extending the coin analogy" (two-nulls section) → generic-engine
+     vs my-engine run-to-run spread.
+  2. GLOSSARY "Noise" entry coin-streak → dyno pulls streak.
+  3. INTERVIEW_PREP "Explain the noise test" coin-bias story → the +15hp
+     claim vs stock run-to-run spread.
+  4. tests/test_backtest.py docstring "just a coin flip" → "a 50/50 guess".
+  Everything else the grep surfaced was mechanical ("sign flips",
+  "hemisphere flips") or substring noise ("triu_inDICEs"). Final grep hits
+  nothing but the policy statement in CLAUDE.md that names the banned words.
+- GLOSSARY: +8 entries (climatology, anomaly, persistence, skill score, null
+  design, calibration/zeroing, ground truth, white noise).
+- INTERVIEW_PREP: pitch rewritten to the owner's arc at all three lengths —
+  aimed for profit, hit 1.04 Sharpe, distrusted it, proved it noise, proved
+  the prover on known ground truth. Numbers synced (36 defects, 120 tests).
+- CLAUDE.md: hard rule 7 recorded as a STANDING POLICY for all future
+  sessions, and the universality run's six-row record appended.

@@ -11,23 +11,33 @@ tooling that proves it's losing is the actual work.
 ## The pitch, at three lengths
 
 ### 10 seconds
-"A backtesting framework for stock strategies, with tooling that measures
-whether a result is distinguishable from random luck."
+"I built a trading bot that hit a 1.0 Sharpe, proved my own result was
+noise, and then turned the prover into a general instrument — validated on
+weather and on generated noise, where the right answer is known."
 
 ### 30 seconds
-"It's a backtesting framework for stock strategies — but the interesting part
-isn't the strategies, it's the tooling that tells you when a result is fake. I
-kept getting backtests that looked good and turned out to be noise, so I built
-a Monte Carlo tool that generates data with provably no signal in it and
-measures what luck alone produces. A standard moving-average strategy still beats its
-benchmark roughly a fifth of the time on data with no signal in it. So most good-looking backtests mean
-nothing. I also had the code adversarially audited, four rounds — it found 17 real
-defects in my own work, including bugs in my own fixes."
+"I set out to build a profitable trading bot and got what looked like
+success — a 1.0+ Sharpe on real data. Instead of believing it, I built the
+tooling to test whether it was distinguishable from luck. It wasn't: buy-and-
+hold beat it on the same bars. Then I proved the prover: pointed the same
+instrument at weather, where real signal is guaranteed by physics — it said
+REAL; and at noise I generated myself — it said NOISE, after teaching me to
+zero it first. One code path, three domains, three correct verdicts, every
+number pinned to a committed artifact. And the code survived six rounds of
+adversarial audit that found 36 defects in my own work along the way."
 
 ### 2 minutes
-"The starting question was whether you could build an automated trading bot.
-The answer is that the engineering is easy and the profitability is nearly
-impossible, so I built it as a research tool instead of a money-making one.
+"The starting question was whether I could build a profitable trading bot.
+The arc is the story: I built it, ran it on six years of real data, and got
+a 1.04 Sharpe — a number most tutorials would ship. I distrusted it, built
+the machinery to test it against what luck alone produces, and the machinery
+said: buy-and-hold did 1.22 on the same bars; the strategy's edge is noise.
+Then came the question that turned a trading project into an instrument: how
+do I know the machinery itself works? So I pointed it at domains with known
+ground truth — weather, where day-to-day persistence is guaranteed by
+physics, and synthetic noise I generated myself. It called weather REAL and
+noise NOISE, and calibrating the second one taught me to measure the
+instrument's own zero point and resolution, like any bench instrument.
 
 There are three layers. Data — pulls historical bars from Alpaca's free tier,
 caches them, and can generate synthetic data so the whole thing runs with no
@@ -138,13 +148,16 @@ windows — a mean edge of -0.76, zero of four folds positive. That gap is
 overfitting made visible.
 
 ### "Explain the noise test like I don't know finance."
-Suppose you want to know whether a coin is biased. You flip it 100 times and get
-55 heads. Is that bias, or luck? To answer, you need to know how often a *fair*
-coin gives 55+ heads — that's your baseline.
+Suppose a tuner claims their mod adds 15 horsepower. The same engine on the
+same dyno doesn't print the same number twice — it varies a few horsepower
+run to run with nothing changed. So before believing +15, you need the
+run-to-run spread of the STOCK engine. If +15 is inside that spread, the
+dyno chart proves nothing.
 
-Same idea. I generate market data that's provably random, run the strategy on it
-hundreds of times, and record how well it does. That's the range luck produces.
-If my real result lands inside that range, I've learned nothing.
+Same idea. I generate market data with provably nothing in it, run the
+strategy on it hundreds of times, and record the spread. That's what
+measurement variation alone produces. If my real result lands inside that
+spread, I've learned nothing.
 
 The result that surprised me: on data with provably no signal, the
 moving-average strategy still "beat" the market about one trial in five.

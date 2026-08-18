@@ -21,8 +21,9 @@ A real, repeatable pattern — something that will probably keep happening.
 ### Noise
 Random fluctuation that *looks* like a pattern but isn't.
 
-Flip a coin 100 times and somewhere you'll see 8 heads in a row. That streak is
-noise. Prices are mostly noise, and human brains are very good at seeing
+Put the same engine on a dyno 100 times and somewhere you'll see three
+rising pulls in a row. That "trend" is noise — nothing about the engine
+changed. Prices are mostly noise, and human brains are very good at seeing
 patterns in noise. Distinguishing the two is the whole game.
 
 ### Edge (or alpha)
@@ -296,3 +297,48 @@ days, per Politis–Romano — keeps short-range structure intact while still
 scrambling any longer sequence a strategy could exploit. This project also
 uses the SAME blocks for every symbol in a trial, so the universe keeps
 moving together and cross-sectional correlation survives.
+
+## Weather & calibration (the universality work)
+
+### Climatology
+The long-run average for a given day of the year — "what mid-August usually
+feels like here". The weather equivalent of buy-and-hold: the naive baseline
+every predictor must beat.
+
+### Anomaly
+Today's value minus the climatology. Weather forecasting lives entirely in
+the anomalies; the seasonal cycle is the easy part everyone gets for free.
+
+### Persistence
+The simplest real forecast: tomorrow will be like today. On temperature it
+genuinely works (anomalies carry over day to day) — which is what makes it a
+perfect known-REAL test signal.
+
+### Skill score
+`1 − MAE(predictor) / MAE(baseline)`. Positive means the predictor beats the
+baseline; the baseline scores exactly 0 against itself. Unit-free, so it
+pools across cities.
+
+### Null design
+Choosing what the shuffled "no signal" data preserves and what it destroys.
+The principle: declare exactly which structure you accuse a result of
+exploiting, then destroy only that. Blocks for trends, shuffles for
+persistence — swapping them silently invalidates the experiment.
+
+### Calibration (zeroing)
+Running the instrument on data with a known answer and correcting for what
+it reads. Here: structureless data should score zero skill; it reads -0.389
+through this pipeline, so -0.389 is the zero point and gets subtracted from
+every reading. Standard practice on any bench instrument, and the reason a
+tiny "signal" inside the zero's own spread proves nothing.
+
+### Ground truth
+A case where the right answer is known before the measurement: markets have
+no simple edge, temperature persists, generated noise contains nothing. An
+instrument you can't test against ground truth is an opinion generator.
+
+### White noise
+A series with no correlation between one step and the next — each value is a
+fresh draw. The synthetic calibration data's anomalies are white noise by
+construction, which is what makes "the instrument must read zero on it" a
+fair demand.

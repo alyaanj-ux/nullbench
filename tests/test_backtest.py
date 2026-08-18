@@ -461,8 +461,8 @@ def test_metrics_on_flat_equity():
 
 def test_sharpe_sign_matches_direction():
     """Drift must be large relative to the standard error of the mean, or
-    this test is just a coin flip. SE here is 0.004/sqrt(1000) ~= 1.3e-4,
-    so a 1.5e-3 drift is ~12 sigma — no seed will flip it."""
+    this test is a 50/50 guess. SE here is 0.004/sqrt(1000) ~= 1.3e-4,
+    so a 1.5e-3 drift is ~12 sigma — no seed will move it."""
     n = 1000
     idx = pd.bdate_range("2018-01-01", periods=n)
     rng = np.random.default_rng(7)

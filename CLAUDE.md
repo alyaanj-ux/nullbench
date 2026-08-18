@@ -98,6 +98,16 @@ never import the broker or place orders; they only emit weights. Keep it that wa
     equity ratio is <= 0 rather than nan. "This blew up" is the single most
     important thing a backtest can tell you; it must not render as a blank cell.
 
+## Standing policies
+
+**No gambling content, ever.** Owner's rule for this project and all future
+work in it: nothing lottery-, betting-, or casino-flavored may enter the
+repo — no such datasets, examples, features, or analogies. When chance needs
+an analogy, use measurement language (a dyno's run-to-run spread), never
+wagering. The docs were swept for this on 2026-08-18; a grep for the
+vocabulary hits nothing but this policy statement itself (a rule has to name
+what it forbids). Keep it that way.
+
 ## Bugs found by adversarial audit (all fixed, all regression-tested)
 
 Kept here as a record of what this codebase's failure modes actually look like:
@@ -194,6 +204,18 @@ the project onto real data for the first time and added the bootstrap null:
 | Real-data band rows are pinned to a committed `reports/night_bands.json` artifact, not to refresh_docs markers | Generated markers promise "reproducible from the shipped config"; a 30-minute keys-required run is a dated artifact instead |
 | A Python child's pipe encoding follows the launching shell (utf-8 under PowerShell, cp1252 under Git Bash): the slow doc tests failed depending on which terminal ran pytest | Subprocess tests pin PYTHONIOENCODING on the child, not just the capture side |
 | The band scanner divided a decimal band by 100 when the LINE contained any "%" (a table row has a win-rate cell) | Scope heuristics to the match, not the line |
+
+The universality run (day 2, DAY_REPORT.md) then took the validator out of
+finance entirely:
+
+| What happened | The lesson it left behind |
+|---|---|
+| The market noise test was extracted into a domain-agnostic harness (`src/validation/`); the market rerun through the new path reproduced `night_bands.json` 400/400 deltas exactly | Refactors get anchors, not trust |
+| Weather (10 cities, 46 years, Open-Meteo): persistence vs climatology scored +0.344 raw / +0.733 zeroed — REAL at 80× the instrument's resolution, exactly as physics requires | The instrument reads signal where signal is guaranteed |
+| Synthetic noise through the identical pipeline initially read "REAL" — the anomaly-shuffle null carries a +0.016 bias (a permutation slightly strengthens the climatology baseline) | The zero test did its job: it measured the instrument instead of passing it |
+| Owner's ruling: zero the instrument. K=30 seeded blanks → zero_offset -0.389, resolution ±0.009 (`reports/calibration.json`); verdicts now require clearing the null band AND the resolution after zeroing | Bench instruments get zeroed; so do statistical ones |
+| Analytic cross-check: no-skill persistence on Gaussian anomalies is 1-√2 ≈ -0.414; measured zero -0.389; the +0.025 gap is the known finite-sample climatology effect | Logged, never tuned |
+| The null-design trap is an executable test: an i.i.d. shuffle kills lag-1 autocorrelation, a 20-day block shuffle leaves ρ=0.68 — the mutant that swaps them fails | A null declares which structure it destroys; swapping nulls is silent invalidation |
 
 All five rounds reinforce the same lesson: **fixes need auditing too**, and so
 do the tests that certify them — and so does the tooling built to stop the

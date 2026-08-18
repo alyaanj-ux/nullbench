@@ -261,10 +261,11 @@ intact so real gaps survive for the next-open fill discipline to bite on.
 Fat tails and clustering survive; any exploitable long-range sequence does
 not.
 
-Extending the coin analogy: the GBM null asks "how often would a *fair coin*
-match my result?" The bootstrap null asks the sharper question — "how often
-would *my own coin*, with its actual weight and wobble, match my result if
-its flips carried no information?" Same verdict logic, honester coin.
+In dyno terms: the GBM null asks "how much does a *generic* engine's number
+vary run to run?" The bootstrap null asks the sharper question — "how much
+does *my* engine's number vary run to run, with its actual compression and
+its actual misfires, when nothing about it has changed?" Same verdict logic,
+honester baseline.
 
 ```bash
 python scripts/run_backtest.py --noise-test --null bootstrap --trials 200
