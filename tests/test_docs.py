@@ -293,6 +293,47 @@ def test_readme_real_data_bands_match_the_artifact():
     assert checked == 2
 
 
+def test_readme_universality_table_matches_the_artifact():
+    """The instrument table at the top of README traces to
+    reports/universality.json — same discipline as the market band rows.
+    Hand-editing a verdict or a number without regenerating the artifact
+    fails here; deleting the artifact fails here too. Parsed by splitting
+    table rows on pipes: no regex, nothing to mis-escape."""
+    artifact = ROOT / "reports" / "universality.json"
+    assert artifact.exists(), "reports/universality.json missing"
+    u = json.loads(artifact.read_text(encoding="utf-8"))
+    text = README.read_text(encoding="utf-8")
+
+    def row(label):
+        for line in text.splitlines():
+            cells = [c.strip() for c in line.split("|")]
+            if len(cells) >= 5 and cells[1].startswith(label):
+                return cells[3], cells[4]     # verdict cell, number cell
+        raise AssertionError(f"README instrument table lacks {label!r}")
+
+    v, num = row("Markets")
+    assert u["market"]["verdict"] in v
+    assert f'{u["market"]["statistic"]:+.2f}' in num
+    assert f'{round(u["market"]["percentile"] * 100):d}th percentile' in num
+
+    v, num = row("Weather")
+    assert u["weather"]["verdict"] in v
+    assert f'{u["weather"]["statistic"]:+.3f} raw' in num
+    assert f'{u["weather"]["calibrated"]:+.3f} zeroed' in num
+
+    v, num = row("Synthetic noise")
+    assert u["synthetic_noise"]["verdict"] in v
+    assert f'{u["synthetic_noise"]["calibrated"]:+.3f}' in num
+    assert f'{u["synthetic_noise"]["resolution"]:.3f} resolution' in num
+
+    # Ground truth stays ground truth — the artifact itself must agree.
+    for k in ("market", "weather", "synthetic_noise"):
+        assert u[k]["required"] == u[k]["verdict"], (
+            f"{k}: artifact records verdict {u[k]['verdict']} against "
+            f"required {u[k]['required']} — the proof does not hold"
+        )
+
+
 def test_readme_and_cli_share_one_formatter():
     """Neither script may format a report block itself.
 

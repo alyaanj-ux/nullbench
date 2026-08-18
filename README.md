@@ -4,6 +4,55 @@ A paper-trading-first algorithmic trading framework for US equities. Backtest en
 
 **Runs entirely on free APIs. No money is required, and the code physically refuses to trade a live account.**
 
+## The instrument
+
+This project began as a trading bot and became something more useful: a
+**domain-agnostic instrument that tells real results apart from noise** — and
+that has been made to prove it in both directions, on data where the truth is
+already known.
+
+![One instrument, three domains, known ground truth](reports/universality.png)
+
+| Domain | Ground truth | Instrument's verdict | The number |
+|---|---|---|---|
+| Markets — SmaCross vs buy-and-hold | efficient; no simple edge exists | **NOISE** ✓ | Sharpe delta -0.18, 57th percentile of its null |
+| Weather — persistence vs climatology | real physics; today predicts tomorrow | **REAL** ✓ | skill +0.344 raw, +0.733 zeroed — 80× the instrument's resolution |
+| Synthetic noise — same pipeline, generated data | structureless by construction | **NOISE** ✓ | zeroed skill -0.001, inside the ±0.009 resolution |
+
+A detector that always answers "noise" is `return False` with extra steps;
+one that always finds signal is a salesman. Reading correctly in both
+directions, through one code path (`src/validation/harness.py`), is the
+claim. Every number above traces to a committed artifact
+(`reports/universality.json`), and a test pins this table to it.
+
+Two design principles carry all of it:
+
+**A null declares exactly which structure you accuse the result of
+exploiting, then destroys only that.** Markets get a ~20-day block bootstrap
+(kills multi-week trends, keeps fat tails and volatility clustering). Weather
+gets an anomaly shuffle (kills day-to-day persistence, keeps seasonality).
+Swapping them would silently invalidate both experiments — a test proves the
+weather signal survives block-shuffling, which is precisely why blocks must
+never be its null.
+
+**The instrument is zeroed like any bench instrument.** Running the pipeline
+on structureless data doesn't score exactly zero — the shuffle null carries a
+small measured bias (+0.016) — so the zero point is measured against 30
+seeded blanks and subtracted, and the zero distribution's spread (±0.009) is
+the instrument's resolution. A verdict of REAL requires clearing the null
+band AND exceeding that resolution after zeroing. The synthetic-noise column
+above is the zero test passing. (`reports/calibration.json` holds the zero;
+the analytic cross-check — no-skill persistence on Gaussian anomalies is
+1-√2 ≈ -0.414 before finite-sample effects — is logged with it.)
+
+Weather data by [Open-Meteo](https://open-meteo.com/) (CC BY 4.0),
+10 cities, 1980→present, fetched politely and cached.
+
+---
+
+## Domain #1: the market (where this project started)
+
+
 ![What luck alone produces, and where the strategy actually landed](reports/null_distribution.png)
 
 *The project's thesis in one image: 200 resamples of the real universe's own
@@ -401,7 +450,7 @@ algotrader/
 │       ├── mean_reversion.py# z-score reversion
 │       └── buy_and_hold.py  # the benchmark
 ├── scripts/run_backtest.py  # CLI entry point
-└── tests/                   # 119 tests incl. lookahead-bias check
+└── tests/                   # 120 tests incl. lookahead-bias check
 ```
 
 ## License

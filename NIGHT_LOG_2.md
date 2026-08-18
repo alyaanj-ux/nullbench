@@ -168,3 +168,24 @@ are the core, T5–T7 skippable; hard rules of NIGHT_SHIFT_2.md unchanged.
     before (anchor tests still pin it).
 - 4 new tests, 4 mutants killed (hash seeding; K-collapse; verdict gate
   removed; zero_offset zeroed). Suite 119 fast + 3 slow, docs in sync.
+
+### T5 — the universality chart and README rewrite  ✅  (14:0x)
+- `reports/universality.json`: all three domains' statistics, bands,
+  verdicts, calibration reference — one committed artifact, the pattern
+  night_bands established.
+- `reports/universality.png`: three panels. Design note: the first draft's
+  synthetic panel was visually misleading (a 0.02-wide axis made the NOISE
+  result LOOK like separation), so panels 2-3 are drawn in ZERO-CORRECTED
+  units with the ±resolution zone shaded — the verdict rule is literally
+  visible. Bonus: the synthetic panel now shows the shuffle-null's own
+  measured bias (-0.015 histogram vs the amber zero zone), i.e. the whole T4
+  story in one picture, annotated.
+- README: new top section — the instrument claim, the chart, the three-row
+  ground-truth table, both design principles (null design; zeroing), the
+  Open-Meteo CC BY 4.0 attribution. Trading is now "Domain #1", its section
+  intact below. The new section written in measurement language from the
+  start (rule 7).
+- `test_readme_universality_table_matches_the_artifact` pins the table:
+  4 mutants killed (verdict edited, number edited, artifact deleted,
+  artifact self-contradicting required != verdict). Suite 120 (+3 slow),
+  docs in sync.
