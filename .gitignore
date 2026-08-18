@@ -1,0 +1,14 @@
+.env
+__pycache__/
+*.pyc
+.pytest_cache/
+data/cache/
+logs/
+state/
+reports/
+.venv/
+venv/
+# Quarantine for the deprecated alpaca-trade-api SDK (this repo uses alpaca-py).
+# Never commit either.
+_to_delete/
+alpaca-trade-api-python-master/

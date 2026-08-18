@@ -1,0 +1,224 @@
+#!/usr/bin/env python
+"""Regenerate the numbers quoted in README.md from a live run.
+
+Why this exists
+---------------
+Round one of the audit found bugs in the engine. Round two found bugs in the
+fixes. Round three found that the *documentation* had rotted: README quoted a
+walk-forward table and a noise band that no longer reproduced, and both were
+labelled "actual output". Nobody had lied — the numbers were real once, and
+then the generator changed underneath them. Prose does not run, so nothing
+caught it.
+
+Round four found two flaws in this script's first version:
+
+  1. It reformatted the output with print statements COPIED from
+     run_backtest.py, so the two drifted — different labels, different padding,
+     six interpretive lines missing. Both now call `src/reporting.py`, so the
+     README block is literally the command's output.
+
+  2. The reproducibility check compared formatted strings for exact equality.
+     Floating point is not bit-identical across platforms (libm and BLAS
+     differ), so docs generated on Linux reported DRIFT on Windows — with no
+     diff printed, so the failure was unactionable. Numbers are now pinned
+     separately from their formatting and compared with a tolerance, and
+     --check prints exactly what moved.
+
+Usage
+-----
+    python scripts/refresh_docs.py            # rewrite README + snapshot
+    python scripts/refresh_docs.py --check    # report drift, write nothing
+
+Takes about a minute — it runs a real walk-forward and a 40-trial noise test.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import re
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
+
+from src.backtest import noise_test, walk_forward  # noqa: E402
+from src.config import load_config  # noqa: E402
+from src.data import get_universe  # noqa: E402
+from src.reporting import (format_noise_test, format_walk_forward,  # noqa: E402
+                           noise_test_values, walk_forward_values)
+
+SNAPSHOT = ROOT / "docs_snapshot.json"
+README = ROOT / "README.md"
+
+# Pinned so the numbers are reproducible. Changing either changes the published
+# band, so they live in the snapshot rather than in someone's shell history.
+NOISE_TRIALS = 40
+STRATEGY = "sma_cross"
+
+# How far a regenerated number may move before it counts as real drift.
+#
+# Not zero, on purpose. Linux and Windows do not produce bit-identical results
+# from the same float code, and demanding exact equality made the check fail
+# for everyone who was not on the machine that generated the docs. 0.02 is
+# comfortably above observed cross-platform noise (~0.001-0.01 on these
+# quantities) and far below any difference that would change a conclusion.
+TOLERANCE = 0.02
+
+
+def _marker(block: str) -> tuple[str, str]:
+    return (f"<!-- generated:{block} -->", f"<!-- /generated:{block} -->")
+
+
+def build() -> tuple[dict[str, str], dict[str, float]]:
+    """Run the real thing. Returns (text blocks, pinned numbers)."""
+    from scripts.run_backtest import PARAM_GRIDS
+
+    cfg = load_config()
+    data = get_universe(cfg, synthetic=True)
+    grid = PARAM_GRIDS.get(STRATEGY, [{}])
+
+    wf = walk_forward(cfg, data, STRATEGY, grid)
+    nt = noise_test(cfg, STRATEGY, params=cfg.strategy_params,
+                    n_trials=NOISE_TRIALS)
+
+    blocks = {
+        "walk_forward": format_walk_forward(wf, len(grid)),
+        "noise_test": format_noise_test(nt),
+    }
+    values = {**walk_forward_values(wf), **noise_test_values(nt)}
+    return blocks, values
+
+
+def replace_block(text: str, block: str, body: str) -> str:
+    open_m, close_m = _marker(block)
+    pattern = re.compile(re.escape(open_m) + r".*?" + re.escape(close_m),
+                         re.DOTALL)
+    if not pattern.search(text):
+        raise SystemExit(
+            f"README.md has no <!-- generated:{block} --> ... "
+            f"<!-- /generated:{block} --> markers. Add them around the block."
+        )
+    return pattern.sub(lambda _: f"{open_m}\n```\n{body}\n```\n{close_m}", text)
+
+
+def diff_values(old: dict, new: dict) -> list[str]:
+    """Which pinned numbers moved beyond tolerance, and by how much."""
+    out = []
+    for key in sorted(set(old) | set(new)):
+        if key not in old:
+            out.append(f"  + {key}: new ({new[key]:+.4f})")
+        elif key not in new:
+            out.append(f"  - {key}: gone (was {old[key]:+.4f})")
+        elif abs(float(old[key]) - float(new[key])) > TOLERANCE:
+            delta = float(new[key]) - float(old[key])
+            out.append(f"  ~ {key}: {float(old[key]):+.4f} -> "
+                       f"{float(new[key]):+.4f}  (moved {delta:+.4f})")
+    return out
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--check", action="store_true",
+                    help="report drift and exit 1; write nothing")
+    args = ap.parse_args()
+
+    blocks, values = build()
+
+    snapshot = {
+        "_comment": "Generated by scripts/refresh_docs.py. Do not hand-edit.",
+        "strategy": STRATEGY,
+        "noise_trials": NOISE_TRIALS,
+        "tolerance": TOLERANCE,
+        "blocks": blocks,
+        "values": values,
+        # Kept for the prose checks in tests/test_docs.py.
+        "noise_band": {"p5": round(values["p5"], 4),
+                       "p95": round(values["p95"], 4),
+                       "mean_delta": round(values["mean_delta"], 4),
+                       "win_rate": round(values["win_rate"], 4)},
+    }
+
+    if args.check:
+        if not SNAPSHOT.exists():
+            print("no docs_snapshot.json — run scripts/refresh_docs.py")
+            return 1
+
+        old = json.loads(SNAPSHOT.read_text(encoding="utf-8"))
+        problems: list[str] = []
+
+        moved = diff_values(old.get("values", {}), values)
+        if moved:
+            problems.append(
+                f"Pinned numbers moved by more than {TOLERANCE}:")
+            problems.extend(moved)
+
+        # Text blocks are compared for STRUCTURE, not digits — the digits are
+        # covered by the tolerance check above and legitimately vary in the
+        # last place across platforms.
+        #
+        # "Structure" means: every line, with digit runs and whitespace runs
+        # collapsed. The first version extracted "labels" via
+        # `ln.split(":")[0]`, which captured table rows (params dicts contain
+        # colons) and broke whenever a value got one character wider —
+        # pandas right-aligns, so `fast: 5` -> `fast: 10` shifted a space and
+        # the check reported a line as "missing" that had merely moved.
+        readme = README.read_text(encoding="utf-8")
+        for name, body in blocks.items():
+            open_m, close_m = _marker(name)
+            if open_m not in readme:
+                problems.append(f"README is missing the {name} markers")
+                continue
+            published = readme.split(open_m, 1)[1].split(close_m, 1)[0]
+
+            def skeleton(text: str) -> list[str]:
+                out = []
+                for ln in text.splitlines():
+                    ln = re.sub(r"[+-]?\d[\d.,%]*", "#", ln)   # digit runs
+                    ln = re.sub(r"\s+", " ", ln).strip()        # spacing
+                    if ln and ln != "```":
+                        out.append(ln)
+                return out
+
+            live_sk, pub_sk = skeleton(body), skeleton(published)
+            if live_sk != pub_sk:
+                pub_set = set(pub_sk)
+                live_set = set(live_sk)
+                gone = [l for l in live_sk if l not in pub_set]
+                extra = [l for l in pub_sk if l not in live_set]
+                detail = []
+                if gone:
+                    detail.append(f"command prints, README lacks: {gone[:3]}")
+                if extra:
+                    detail.append(f"README has, command no longer prints: "
+                                  f"{extra[:3]}")
+                if not detail:                      # same lines, wrong order
+                    detail.append("same lines in a different order")
+                problems.append(
+                    f"README's {name} block structure differs from the "
+                    f"command's output — " + "; ".join(detail))
+
+        if problems:
+            print("DRIFT — run scripts/refresh_docs.py\n")
+            print("\n".join(problems))
+            return 1
+        print("docs in sync")
+        return 0
+
+    text = README.read_text(encoding="utf-8")
+    for name, body in blocks.items():
+        text = replace_block(text, name, body)
+    README.write_text(text, encoding="utf-8")
+    SNAPSHOT.write_text(
+        json.dumps(snapshot, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8")
+
+    print(f"wrote README.md and {SNAPSHOT.name}")
+    print(f"  noise band: [{values['p5']:+.3f}, {values['p95']:+.3f}]  "
+          f"win rate {values['win_rate']:.0%}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

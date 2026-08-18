@@ -1,0 +1,52 @@
+# ---------------------------------------------------------------------------
+# All tunable knobs live here so you never have to edit code to run an
+# experiment. Every value is read by src/config.py at startup.
+# ---------------------------------------------------------------------------
+
+universe:
+  # Keep this small. More symbols = more API calls = more rate-limit pain,
+  # and it does not make a bad strategy good.
+  symbols: [SPY, QQQ, AAPL, MSFT, NVDA]
+
+data:
+  timeframe: "1Day"        # "1Min", "5Min", "15Min", "1Hour", "1Day"
+  start: "2018-01-01"
+  end: null                # null = up to today
+  source: "alpaca"         # official API, free keys in .env, supports intraday.
+                           # "stooq" = keyless, daily only. NOTE: stooq.com's robots.txt
+                           # disallows automated access — opt in knowingly.
+  feed: "iex"              # Alpaca only. Free tier. "sip" needs a paid subscription.
+  adjustment: "all"        # Alpaca only: "all" | "split" | "dividend" | "raw".
+                           # "all" = split- AND dividend-adjusted (total return),
+                           # because buy-and-hold is a total-return benchmark.
+                           # "raw" bars turn every split into a fake crash the
+                           # backtest will happily trade. Never quote raw results.
+  cache_dir: "data/cache"
+
+strategy:
+  # Which strategy class to run. Must match a key in src/strategies/__init__.py
+  name: "sma_cross"
+  params:
+    fast: 20
+    slow: 100
+
+backtest:
+  initial_cash: 10000.0
+  # --- Cost model. These are the numbers that kill naive strategies. ---
+  commission_per_share: 0.0     # Alpaca stocks are commission-free
+  commission_min: 0.0
+  slippage_bps: 5.0             # 5 basis points = 0.05% per side. Be pessimistic.
+  # Fills always happen at the NEXT bar's open, never the same bar's close.
+  # This is NOT configurable on purpose — same-bar fills are lookahead bias,
+  # not a trade-off, so there is no switch that can turn them on.
+
+risk:
+  max_position_pct: 0.25        # never put more than 25% of equity in one name
+  max_gross_exposure: 1.0       # no leverage
+  max_daily_loss_pct: 0.03      # kill switch: stop trading after -3% on the day
+  min_order_notional: 1.0       # Alpaca allows fractional shares
+
+live:
+  poll_seconds: 60              # how often the live loop wakes up
+  dry_run: true                 # true = log intended orders, submit nothing
+  state_file: "state/positions.json"
