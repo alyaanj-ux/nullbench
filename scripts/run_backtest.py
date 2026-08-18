@@ -109,6 +109,13 @@ def main() -> int:
                         "range of results luck alone produces")
     p.add_argument("--trials", type=int, default=40,
                    help="Number of universes for --noise-test (default 40)")
+    p.add_argument("--null", choices=["gbm", "bootstrap"], default="gbm",
+                   help="Null model for --noise-test. gbm = correlated "
+                        "synthetic random walks (no keys needed). bootstrap = "
+                        "stationary block bootstrap of the LOADED universe's "
+                        "real returns — fat tails and vol clustering "
+                        "survive, so the band is honest on real data. Needs "
+                        "real data (not --synthetic).")
     p.add_argument("--no-plot", action="store_true")
     p.add_argument("--source", choices=["stooq", "alpaca"],
                    help="Data provider (default from config.yaml). "
@@ -190,12 +197,16 @@ def main() -> int:
             print(f"  Skipped: {exc}")
 
     if args.noise_test:
-        print(f"\n{'=' * 60}\n  NOISE TEST — {args.trials} random-walk universes\n{'=' * 60}")
-        print("  Random walks have no edge in them. This is the range of\n"
-              "  results LUCK ALONE produces for this strategy.\n")
+        label = ("resampled real-return universes (stationary bootstrap)"
+                 if args.null == "bootstrap" else "random-walk universes")
+        print(f"\n{'=' * 60}\n  NOISE TEST — {args.trials} {label}\n{'=' * 60}")
+        print("  This data has no exploitable edge in it. This is the range\n"
+              "  of results LUCK ALONE produces for this strategy.\n")
         nt = noise_test(cfg, name,
                         params=cfg.strategy_params if not args.strategy else {},
-                        n_trials=args.trials)
+                        n_trials=args.trials,
+                        null=args.null,
+                        source_data=None if args.synthetic else data)
         print(format_noise_test(nt))
         print(noise_test_verdict(nt))
 

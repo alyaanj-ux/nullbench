@@ -421,6 +421,8 @@ def noise_test(
     params: dict | None = None,
     n_trials: int = 40,
     n_bars: int = 1500,
+    null: str = "gbm",
+    source_data: dict | None = None,
 ) -> dict:
     """Run the strategy against many independent random-walk universes.
 
@@ -442,11 +444,27 @@ def noise_test(
     params = params or {}
     deltas, strat_sharpes, bench_sharpes = [], [], []
 
+    if null not in ("gbm", "bootstrap"):
+        raise ValueError(f"unknown null {null!r}; choose 'gbm' or 'bootstrap'")
+    if null == "bootstrap":
+        if not source_data:
+            raise ValueError(
+                "null='bootstrap' resamples REAL returns and needs the loaded "
+                "universe passed as source_data — run without --synthetic."
+            )
+        from .bootstrap_null import resample_universe
+
     for trial in range(n_trials):
-        # Correlated basket, not independent paths — see synthetic_universe.
-        # Independent paths diversify away almost all variance and make this
-        # null band far too narrow.
-        data = synthetic_universe(cfg.symbols, n=n_bars, seed=trial * 1000)
+        if null == "bootstrap":
+            # Stationary block bootstrap of the real returns: fat tails and
+            # volatility clustering survive, exploitable sequence does not.
+            # Same blocks for every symbol -> correlation preserved.
+            data = resample_universe(source_data, trial)
+        else:
+            # Correlated GBM basket, not independent paths — see
+            # synthetic_universe. Independent paths diversify away almost all
+            # variance and make this null band far too narrow.
+            data = synthetic_universe(cfg.symbols, n=n_bars, seed=trial * 1000)
         try:
             s = Backtester(cfg).run(data, build_strategy(strategy_name, **params))
             b = Backtester(cfg).run(data, build_strategy("buy_and_hold"))
@@ -463,6 +481,7 @@ def noise_test(
         raise RuntimeError("All noise trials failed")
 
     return {
+        "null": null,
         "n_trials": int(d.size),
         "mean_delta": float(d.mean()),
         "std_delta": float(d.std(ddof=1)) if d.size > 1 else 0.0,

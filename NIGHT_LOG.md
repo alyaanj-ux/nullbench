@@ -67,3 +67,28 @@ and judgment call lands here. Written for the owner's morning coffee.
     (2022-08) — all inside the window, all invisible because adjustment=all
     is doing its job. More empirical confirmation of the T1 finding.
 - Committed config change only; cache stays gitignored.
+
+### T3 — stationary block bootstrap null  ✅
+- New `src/bootstrap_null.py`: Politis–Romano stationary bootstrap
+  (geometric blocks, expected 20 trading days, circular wrap).
+  - ONE index sequence shared by all symbols per trial → cross-sectional
+    correlation preserved by construction. Mutation-verified: per-symbol
+    indices collapse pairwise corr 0.801 → -0.006.
+  - (overnight, intraday) log-return PAIRS resampled jointly, bars rebuilt
+    via `_ohlcv_from_components` → real gaps survive for next-open fills.
+  - Seeds: blake2b of "bootstrap-<trial>", never hash().
+- Wired `--null {gbm,bootstrap}` into the CLI (default unchanged: gbm).
+  Bootstrap refuses --synthetic (needs real returns), tested end-to-end on
+  the 15-symbol cache: 5-trial smoke run produced a sane band.
+- 7 new tests, all 6 planned mutants killed (hash seeding, per-symbol
+  indices, doubled returns, block length 1, zero initial price, gaps
+  destroyed). Fast suite now 102 (+2 slow).
+- Docs regenerated for the NEW 15-symbol shipped config (T2 changed what the
+  synthetic universe is, so every pinned number legitimately moved):
+  synthetic GBM band now [-0.50, +0.12], win 22%, IS→OOS -0.27 → -0.60,
+  1/4 folds positive. INTERVIEW_PREP table rows synced from the snapshot.
+- FOUND & FIXED a test-infra flake: a Python child's pipe encoding follows
+  the launching shell (utf-8 under PowerShell, cp1252 under Git Bash), so the
+  slow doc tests failed depending on WHICH TERMINAL ran pytest. Children now
+  get PYTHONIOENCODING=utf-8 explicitly (`_utf8_env()` in test_docs.py).
+  This was the reason the first T3 gate showed a mysterious slow failure.

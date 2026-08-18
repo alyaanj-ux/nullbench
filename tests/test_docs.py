@@ -13,6 +13,7 @@ not run, so no test noticed. These do.
 from __future__ import annotations
 
 import json
+import os
 import re
 import subprocess
 import sys
@@ -25,6 +26,18 @@ sys.path.insert(0, str(ROOT))
 
 README = ROOT / "README.md"
 SNAPSHOT = ROOT / "docs_snapshot.json"
+
+
+def _utf8_env() -> dict:
+    """Child processes must WRITE utf-8, not just be READ as utf-8.
+
+    A Python child's pipe encoding follows the launching shell's environment:
+    utf-8 under one shell, cp1252 under another. Capturing with
+    encoding="utf-8" fixed the read side, but when the child itself wrote
+    cp1252 the em-dashes decoded to U+FFFD and this file's comparisons lied
+    depending on WHICH TERMINAL ran pytest. Pin the child side too.
+    """
+    return {**os.environ, "PYTHONIOENCODING": "utf-8"}
 
 
 def _snapshot() -> dict:
@@ -269,7 +282,7 @@ def test_generated_blocks_actually_reproduce():
     proc = subprocess.run(
         [sys.executable, "scripts/refresh_docs.py", "--check"],
         cwd=ROOT, capture_output=True, text=True, encoding="utf-8",
-        errors="replace",
+        errors="replace", env=_utf8_env(),
     )
     assert proc.returncode == 0, (
         "docs no longer reproduce from a live run — "
@@ -299,7 +312,7 @@ def test_readme_block_matches_the_documented_command():
         [sys.executable, "scripts/run_backtest.py",
          "--synthetic", "--walk-forward", "--no-plot"],
         cwd=ROOT, capture_output=True, text=True, encoding="utf-8",
-        errors="replace",
+        errors="replace", env=_utf8_env(),
     )
     assert proc.returncode == 0, f"the documented command failed:\n{proc.stderr}"
 

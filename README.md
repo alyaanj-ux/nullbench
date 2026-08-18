@@ -142,15 +142,15 @@ Running one backtest and liking the number is not research. Two tools push back:
 <!-- generated:walk_forward -->
 ```
  fold                    params  in_sample_sharpe  oos_sharpe  oos_benchmark_sharpe  oos_edge  oos_return  oos_maxdd  oos_trades
-    1 {'fast': 50, 'slow': 150}             0.761      -0.134                 0.583    -0.718     -0.0132    -0.1078          13
-    2  {'fast': 20, 'slow': 50}             0.602       0.770                 1.377    -0.608      0.1358    -0.1330          33
-    3 {'fast': 50, 'slow': 200}             0.725      -1.390                -0.645    -0.746     -0.0236    -0.0287           4
-    4 {'fast': 10, 'slow': 150}             0.453      -0.065                 0.709    -0.774     -0.0157    -0.1114          29
+    1 {'fast': 50, 'slow': 100}            -0.397       0.165                -0.029     0.194      0.0116    -0.0979          53
+    2 {'fast': 50, 'slow': 100}            -0.123      -0.512                -0.382    -0.130     -0.0546    -0.1220          43
+    3 {'fast': 50, 'slow': 100}            -0.086      -1.648                -1.077    -0.571     -0.0911    -0.0929          31
+    4 {'fast': 50, 'slow': 100}            -0.455      -0.409                 1.227    -1.636     -0.0655    -0.1790          56
 
-  Mean in-sample Sharpe:      0.64
-  Mean out-of-sample Sharpe:  -0.20
-  Mean OOS benchmark Sharpe:  0.51
-  Mean OOS edge:             -0.71   (0/4 folds positive)
+  Mean in-sample Sharpe:      -0.27
+  Mean out-of-sample Sharpe:  -0.60
+  Mean OOS benchmark Sharpe:  -0.07
+  Mean OOS edge:             -0.54   (1/4 folds positive)
 
   Read the EDGE column, not the raw OOS Sharpe — an unbenchmarked
   Sharpe just tells you what the market did in that window.
@@ -170,11 +170,11 @@ The second lesson is subtler and cost me a bug: **read the edge column, not the 
 <!-- generated:noise_test -->
 ```
   Sharpe delta vs buy & hold (strategy minus benchmark):
-    mean              -0.156
-    std deviation      0.285
-    5th–95th pct      -0.599 to +0.221
-    full range        -0.742 to +0.526
-    strategy 'won'    32% of trials
+    mean              -0.163
+    std deviation      0.206
+    5th–95th pct      -0.503 to +0.123
+    full range        -0.517 to +0.204
+    strategy 'won'    22% of trials
 ```
 <!-- /generated:noise_test -->
 
@@ -187,6 +187,32 @@ The headline synthetic run uses the **same** correlated generator, on an indepen
 **Where the shipped strategy actually lands:** inside the band, close to the null mean. That is the correct result. The data is a random walk — a tool that reported an edge here would be broken. The point of this repo is a harness that can tell you that clearly, not a strategy that beats it.
 
 This is the tool to reach for when a result excites you. Run it before you believe a number.
+
+### Two nulls: random walks, and your own returns reshuffled
+
+The band above is built from **synthetic correlated random walks** (GBM). That
+null is free and needs no data, but it is too polite: real returns have fat
+tails (days a Gaussian thinks are impossible) and volatility clustering
+(crashes travel in packs), and both let luck produce wilder outcomes than a
+random walk can. A band built from GBM is therefore somewhat too narrow on
+real data — biased toward telling you a fake edge is real.
+
+`--null bootstrap` rebuilds the band from the loaded universe's **own returns,
+resampled** with a stationary block bootstrap (Politis–Romano): blocks of
+~20 trading days, drawn with the SAME block sequence for every symbol so the
+universe still moves together, and (overnight, intraday) return pairs kept
+intact so real gaps survive for the next-open fill discipline to bite on.
+Fat tails and clustering survive; any exploitable long-range sequence does
+not.
+
+Extending the coin analogy: the GBM null asks "how often would a *fair coin*
+match my result?" The bootstrap null asks the sharper question — "how often
+would *my own coin*, with its actual weight and wobble, match my result if
+its flips carried no information?" Same verdict logic, honester coin.
+
+```bash
+python scripts/run_backtest.py --noise-test --null bootstrap --trials 200
+```
 
 ---
 
@@ -344,7 +370,7 @@ algotrader/
 │       ├── mean_reversion.py# z-score reversion
 │       └── buy_and_hold.py  # the benchmark
 ├── scripts/run_backtest.py  # CLI entry point
-└── tests/                   # 95 tests incl. lookahead-bias check
+└── tests/                   # 102 tests incl. lookahead-bias check
 ```
 
 ## License
