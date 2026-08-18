@@ -1,6 +1,7 @@
 .env
 # Owner's working notes — kept locally, never published:
 dev-notes/
+PUBLISH_CHECKLIST.md
 __pycache__/
 *.pyc
 .pytest_cache/
