@@ -17,7 +17,7 @@ numbers look better.
 ```bash
 pip install -r requirements.txt
 
-python -m pytest tests/ -q                                  # tests (103, +2 slow)
+python -m pytest tests/ -q                                  # tests (115, +3 slow)
 python -m pytest -m slow                                    # re-runs real backtests (~1 min)
 python scripts/refresh_docs.py                              # regenerate README's quoted numbers
 python scripts/run_backtest.py --synthetic --benchmark      # no API keys needed
